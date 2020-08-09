@@ -34,12 +34,13 @@ public class MyTimer {
         this.startTime = System.nanoTime(); 
     }
 
-    public void stop(String message){
+    public String stop(String message){
         this.endTime = System.nanoTime(); 
        double duration = (this.endTime - this.startTime) / 1000000000.0;
        //if(duration > 1){
-           System.out.println(message + " took " + duration + " seconds");
+           //System.out.println(message + " took " + duration + " seconds");
        //}
+       return(message + " took " + duration + " seconds");
     } 
 
 }
