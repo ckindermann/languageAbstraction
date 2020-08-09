@@ -1,4 +1,4 @@
-package uk.ac.man.cs.iso.renaming;
+package uk.ac.man.cs.iso;
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;
