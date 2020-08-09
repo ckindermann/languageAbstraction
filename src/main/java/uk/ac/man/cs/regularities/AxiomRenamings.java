@@ -42,7 +42,7 @@ import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
  * Pattern 
  */
 
-public class AxiomRenamings{
+public class AxiomRenamings {
 
     private OWLOntology ontology;
 
