@@ -1,6 +1,9 @@
 # Maven binaries
 /target
 
+# shell scripts
+*.sh
+
 # Compiled class file
 *.class
 
