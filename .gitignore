@@ -1,3 +1,6 @@
+# Maven binaries
+/target
+
 # Compiled class file
 *.class
 
