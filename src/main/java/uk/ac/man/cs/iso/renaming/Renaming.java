@@ -1,5 +1,6 @@
 package uk.ac.man.cs.iso.renaming;
 
+import uk.ac.man.cs.iso.*;
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;
 import uk.ac.man.cs.structure.*;
@@ -106,6 +107,8 @@ public class Renaming {
         return false;
     }
 
+    //TODO: the ontology transformer throws errors
+    //SO: implement your own replacing 
     private boolean testAssignment(Map<IRI,IRI> assignment) throws Exception {
 
         IRI IOR = IRI.create("http://owl.api.tutorial"); 
