@@ -100,9 +100,9 @@ public class Renaming {
             GraphMapping<SyntaxNode,DefaultEdge> mapping = it.next();
             //get mapping as map
             Map<IRI,IRI> validAssignment = getValidRenaming(mapping);
-            if(validAssignment != null){
-                try{
-                    if(testAssignment(validAssignment)){//blind substitution of IRI's can break things
+            if(validAssignment != null){//we only check whether a substitution is a bijection
+                try{ //however, blind substitution of IRI's can 'break' things
+                    if(testAssignment(validAssignment)){//meaning the substitution is not infact 'valid' in OWL
                         return true;
                     }
                 } catch (Exception e){
@@ -113,8 +113,6 @@ public class Renaming {
         return false;
     }
 
-    //TODO: the ontology transformer throws errors
-    //SO: implement your own replacing 
     private boolean testAssignment(Map<IRI,IRI> assignment) throws Exception {
 
         IRI IOR = IRI.create("http://owl.api.tutorial"); 
