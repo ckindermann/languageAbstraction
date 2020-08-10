@@ -1,4 +1,4 @@
-package uk.ac.man.cs.regularities;
+package uk.ac.man.cs.regularities.axiom;
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.parser.*;

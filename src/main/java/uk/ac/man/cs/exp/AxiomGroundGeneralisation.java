@@ -3,7 +3,7 @@ package uk.ac.man.cs.exp;
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;
-import uk.ac.man.cs.regularities.*;
+import uk.ac.man.cs.regularities.axiom.*;
 import uk.ac.man.cs.parser.*;
 import uk.ac.man.cs.structure.*;
 import uk.ac.man.cs.structure.nodes.*;
@@ -62,7 +62,7 @@ public class AxiomGroundGeneralisation {
 
         MyTimer timer = new MyTimer();
         timer.go();
-        GroundGeneralisations ggs= new GroundGeneralisations(ont);
+        AxiomGroundGeneralisations ggs= new AxiomGroundGeneralisations(ont);
         log.info(timer.stop("GG " + ontologyName));
 
         int regularities = ggs.getRegularity2instance().size();

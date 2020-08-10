@@ -1,4 +1,4 @@
-package uk.ac.man.cs.regularities;
+package uk.ac.man.cs.regularities.axiom;
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.parser.*;
@@ -42,7 +42,7 @@ import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
  * Pattern 
  */
 
-public class GroundGeneralisations {
+public class AxiomGroundGeneralisations {
 
     private OWLOntology ontology;
 
@@ -54,7 +54,7 @@ public class GroundGeneralisations {
 
     private SyntaxTreeBuilder treeBuilder;
 
-    public GroundGeneralisations(OWLOntology o) {
+    public AxiomGroundGeneralisations(OWLOntology o) {
         this.ontology = o;
         this.stratify(); 
         this.mine();

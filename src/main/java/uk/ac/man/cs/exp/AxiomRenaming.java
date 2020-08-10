@@ -3,7 +3,7 @@ package uk.ac.man.cs.exp;
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;
-import uk.ac.man.cs.regularities.*;
+import uk.ac.man.cs.regularities.axiom.*;
 import uk.ac.man.cs.parser.*;
 import uk.ac.man.cs.structure.*;
 import uk.ac.man.cs.structure.nodes.*;
