@@ -91,6 +91,8 @@ public class Renaming {
             return false;
         }
 
+        //TODO: check whether types of IRI match
+
         //BOTH isomorphic && repetitive entities
         //so we need to test for renaming
         Iterator<GraphMapping<SyntaxNode,DefaultEdge>> it = inspector.getMappings();
@@ -99,8 +101,12 @@ public class Renaming {
             //get mapping as map
             Map<IRI,IRI> validAssignment = getValidRenaming(mapping);
             if(validAssignment != null){
-                if(testAssignment(validAssignment)){
-                    return true;
+                try{
+                    if(testAssignment(validAssignment)){//blind substitution of IRI's can break things
+                        return true;
+                    }
+                } catch (Exception e){
+                    ;//so ignore such substitutions
                 }
             } 
         }
