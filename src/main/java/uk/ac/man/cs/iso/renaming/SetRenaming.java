@@ -34,10 +34,10 @@ import org.jgrapht.graph.*;
 import org.jgrapht.traverse.*;
 import org.jgrapht.alg.isomorphism.*;
 
-public class Renaming {
+public class SetRenaming {
 
-    private OWLAxiom a1;
-    private OWLAxiom a2;
+    private Set<OWLAxiom> a1;
+    private Set<OWLAxiom> a2;
 
     private Graph<SyntaxNode,DefaultEdge> g1;
     private Graph<SyntaxNode,DefaultEdge> g2;
@@ -47,16 +47,27 @@ public class Renaming {
 
     private boolean isRenaming;
 
-    public static boolean exists(SyntaxTree s1, SyntaxTree s2) {
-        Renaming r = new Renaming(s1,s2);
+    public static boolean exists(Set<SyntaxTree> s1, Set<SyntaxTree> s2) {
+        SetRenaming r = new SetRenaming(s1,s2);
         return r.exists(); 
     }
 
-    public Renaming(SyntaxTree t1, SyntaxTree t2) {
-        this.g1 = t1.getTree();
-        this.g2 = t2.getTree();
-        this.a1 = ((AxiomNode) t1.getRoot()).getAxiom();
-        this.a2 = ((AxiomNode) t2.getRoot()).getAxiom();
+    public SetRenaming(Set<SyntaxTree> t1, Set<SyntaxTree> t2) {
+
+        this.g1 = new SimpleDirectedGraph<>(DefaultEdge.class);
+        this.g2 = new SimpleDirectedGraph<>(DefaultEdge.class);
+
+        this.a1 = new HashSet<>();
+        this.a2 = new HashSet<>();
+
+        for(SyntaxTree t : t1){ 
+            Graphs.addGraph(this.g1,t.getTree());
+            this.a1.add(((AxiomNode) t.getRoot()).getAxiom());
+        }
+        for(SyntaxTree t : t2){ 
+            Graphs.addGraph(this.g2,t.getTree());
+            this.a2.add(((AxiomNode) t.getRoot()).getAxiom());
+        } 
         this.initialise();
         this.isRenaming = this.exists(g1,g2); 
     }
@@ -135,11 +146,14 @@ public class Renaming {
         o.applyChanges(results);
 
         Set<OWLLogicalAxiom> axims =  o.getLogicalAxioms(true);
-        for(OWLLogicalAxiom a : axims){
-            if(a.equals(this.a2)){
-                return true;
-            }
+        if(axims.equals(this.a2)){
+            return true;
         }
+        //for(OWLLogicalAxiom a : axims){
+        //    if(a.equals(this.a2)){
+        //        return true;
+        //    }
+        //}
 
         return false;
     }
@@ -218,4 +232,5 @@ public class Renaming {
         }
         return map; 
     } 
+
 }
