@@ -3,7 +3,6 @@ package uk.ac.man.cs.regularities.axiomsets.gg;
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.parser.*;
 import uk.ac.man.cs.util.*;
-import uk.ac.man.cs.iso.renaming.*;
 import uk.ac.man.cs.iso.gg.*;
 import uk.ac.man.cs.structure.*;
 import uk.ac.man.cs.structure.nodes.*;
@@ -207,7 +206,7 @@ public class ClassFrameGroundGeneralisation {
             for(Map.Entry<SyntaxTree,Integer> entry : map.entrySet()){
                 SyntaxTree t = entry.getKey();
                 int weight = entry.getValue();
-                if(Renaming.exists(t,insert)){//ATTENTION
+                if(GroundGeneralisation.exists(t,insert)){//ATTENTION
                     found = true;
                     map.replace(t,weight+1); 
                     break;
