@@ -36,6 +36,11 @@ import org.jgrapht.traverse.*;
 /**
  * Syntax Node
  * A syntax node 
+ *
+ * TODO:
+ * - currently the generalisation of CEP is done by the parser
+ * - meaning, an axiom is parsed into a tree only according to its class expressions
+ * - this is beneficial from a performance perspective but could be done otherwise *
  */
 public class SyntaxNodeComparator implements Comparator<SyntaxNode> {
 
