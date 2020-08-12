@@ -126,9 +126,9 @@ public class SyntaxNodeComparator implements Comparator<SyntaxNode> {
     }
 
     private int compareCardinalityNode(CardinalityNode n1, CardinalityNode n2){
-        if(n1.getCardinality() == n2.getCardinality())
-            return 0;
-        return -1; 
+        //if(n1.getCardinality() == n2.getCardinality())
+            return 0;//all numbers are generalised over
+        //return -1; 
     }
 
     //TODO: yeah yeah yeah, repetitive code - its a prototype
