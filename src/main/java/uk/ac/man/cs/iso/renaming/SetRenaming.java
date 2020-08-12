@@ -1,6 +1,7 @@
 package uk.ac.man.cs.iso.renaming;
 
 import uk.ac.man.cs.iso.*;
+import uk.ac.man.cs.iso.irig.*;
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;
 import uk.ac.man.cs.structure.*;
@@ -45,9 +46,21 @@ public class SetRenaming {
     private Map<SyntaxNode,IRI> node2iri1;
     private Map<SyntaxNode,IRI> node2iri2;
 
+    private Map<IRI,Integer> iri2occurrence1;
+    private Map<IRI,Integer> iri2occurrence2;
+
     private boolean isRenaming;
 
     public static boolean exists(Set<SyntaxTree> s1, Set<SyntaxTree> s2) {
+        if(!SetIRIGeneralisation.exists(s1,s2)){
+            return false;
+        }
+
+        SymmetricDifferenceRenaming sdr = new SymmetricDifferenceRenaming(s1,s2);
+        if(sdr.exists()){
+            return true;
+        }
+
         SetRenaming r = new SetRenaming(s1,s2);
         return r.exists(); 
     }
@@ -73,8 +86,44 @@ public class SetRenaming {
     }
 
     private void initialise(){
+        //1. get iri nodes
         this.node2iri1 = this.getIRInodes(this.g1);
         this.node2iri2 = this.getIRInodes(this.g2); 
+
+        //2. count occurrences of IRIs
+        this.iri2occurrence1 = new HashMap<>();
+        this.iri2occurrence2 = new HashMap<>();
+
+        for(Map.Entry<SyntaxNode,IRI> entry : this.node2iri1.entrySet()){
+            SyntaxNode n = entry.getKey();
+            IRI iri = entry.getValue();
+            this.iri2occurrence1.putIfAbsent(iri,0);
+            int update = this.iri2occurrence1.get(iri) + 1;
+            iri2occurrence1.replace(iri,update);
+        }
+
+        for(Map.Entry<SyntaxNode,IRI> entry : this.node2iri2.entrySet()){
+            SyntaxNode n = entry.getKey();
+            IRI iri = entry.getValue();
+            this.iri2occurrence2.putIfAbsent(iri,0);
+            int update = this.iri2occurrence2.get(iri) + 1;
+            iri2occurrence2.replace(iri,update);
+        }
+
+        //3. add IRI counts to syntax nodes 
+        for(SyntaxNode n : g1.vertexSet()){
+            if(node2iri1.containsKey(n)){
+                int occurrence = this.iri2occurrence1.get(node2iri1.get(n));
+                n.setOccurrence(occurrence);
+            }
+        }
+
+        for(SyntaxNode n : g2.vertexSet()){
+            if(node2iri2.containsKey(n)){
+                int occurrence = this.iri2occurrence2.get(node2iri2.get(n));
+                n.setOccurrence(occurrence);
+            }
+        }
     }
 
     public boolean exists(){

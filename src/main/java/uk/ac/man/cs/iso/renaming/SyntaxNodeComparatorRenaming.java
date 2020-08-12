@@ -45,6 +45,9 @@ public class SyntaxNodeComparatorRenaming implements Comparator<SyntaxNode> {
 
     @Override
     public int compare(SyntaxNode n1, SyntaxNode n2){
+        if(n1.getOccurrence() != n2.getOccurrence()){
+            return -1;
+        }
 
         if(n1 instanceof AxiomNode && n2 instanceof AxiomNode)
             return compareAxiomNodes((AxiomNode) n1, (AxiomNode) n2);
@@ -91,11 +94,8 @@ public class SyntaxNodeComparatorRenaming implements Comparator<SyntaxNode> {
         return -1;
     }
 
-
     private int compareLiteralNode(LiteralNode n1, LiteralNode n2){ 
-        if(n1.getLiteral().compareTo(n2.getLiteral()) == 0)
-            return 0;
-        return -1;
+        return n1.getLiteral().compareTo(n2.getLiteral());
     }
 
     private int compareIndividualNodes(IndividualNode n1, IndividualNode n2){
@@ -105,22 +105,11 @@ public class SyntaxNodeComparatorRenaming implements Comparator<SyntaxNode> {
     }
 
     private int compareFacetRestrictionNode(FacetRestrictionNode n1, FacetRestrictionNode n2){
-        //if(n1.getFacetRestriction().getFacet().equals(n2.getFacetRestriction().getFacet()))
-            //return 0;
-            //
-        if(n1.getFacetRestriction().compareTo(n2.getFacetRestriction()) == 0)
-            return 0;
-        return -1; 
+        return n1.getFacetRestriction().compareTo(n2.getFacetRestriction());
     }
 
     private int compareDataRangeNode(DataRangeNode n1, DataRangeNode n2){
-        //TODO: list everything for fine grained comparison
-        //if(n1.getDataRange().getClass() == n2.getDataRange().getClass())
-        //    return 0;
-        //return -1; 
-        if(n1.getDataRange().compareTo(n2.getDataRange()) == 0)
-            return 0;
-        return -1;
+        return n1.getDataRange().compareTo(n2.getDataRange());
     }
 
     private int compareAxiomNodes(AxiomNode n1, AxiomNode n2){

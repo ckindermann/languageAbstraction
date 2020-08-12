@@ -1,7 +1,9 @@
-package uk.ac.man.cs.structure.nodes;
+package uk.ac.man.cs.iso.renaming;
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;
+import uk.ac.man.cs.structure.*;
+import uk.ac.man.cs.structure.nodes.*;
 
 import java.io.*;
 import java.util.*;
@@ -38,46 +40,22 @@ import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
  * Syntax Node
  * A syntax node 
  */
-public class SyntaxNode {
-    //will hold
-    //-class expressions
-    //-property expressions
-    //-numbers
-    //-individuals
-    //-axioms
+public class RenamingEdgeComparator implements Comparator<RenamingEdge> {
 
-    //TODO: add convenience functions to determine
-    //whether a SyntaxNode contains an entity with an IRI
-    private OWLObject object;
-
-    //count number of times this node occurrs in an axiom
-    //NB: I currently only use this for IRI's to speed up renaming detection
-    private int occurrence;
-
-    public SyntaxNode(OWLObject o){
-        this.object = o;
-        this.occurrence = 1;
+    public RenamingEdgeComparator(){
+        ;
     }
 
-    public int getOccurrence(){
-        return this.occurrence;
+    @Override
+    public int compare(RenamingEdge e1, RenamingEdge e2){
+        //renaming constraint means that source and target will have the same iri
+        if(e1.hasRenamingConstraint() != e2.hasRenamingConstraint())
+            return -1;
+        return 0;
     }
 
-    public void setOccurrence(int occ){
-        this.occurrence = occ;
-    }
-
-    public String toString(){
-        if(object == null){
-            return "null";
-        } else {
-            return this.object.toString();
-        }
-    }
-
-    public OWLObject getObject(){
-        return this.object;
-        //what happens if I call "getClass()" on object?
-        //TEST LATER
+    @Override
+    public boolean equals(Object obj){
+        return this == obj;
     } 
 }
