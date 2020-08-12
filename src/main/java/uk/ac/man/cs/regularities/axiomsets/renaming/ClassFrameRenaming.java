@@ -4,7 +4,8 @@ import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.parser.*;
 import uk.ac.man.cs.util.*;
 import uk.ac.man.cs.iso.renaming.*;
-import uk.ac.man.cs.iso.gg.*;
+//import uk.ac.man.cs.iso.gg.*;
+import uk.ac.man.cs.iso.irig.*;
 import uk.ac.man.cs.structure.*;
 import uk.ac.man.cs.structure.nodes.*;
 import uk.ac.man.cs.parser.*;
@@ -168,13 +169,13 @@ public class ClassFrameRenaming {
         if(this.disjointClassesSpecificity != f.getDisjointClassesSpecificity())
             return false; 
 
-        if(!SetGroundGeneralisation.exists(this.superclasses, f.getSuperClasses()))
+        if(!SetIRIGeneralisation.exists(this.superclasses, f.getSuperClasses()))
             return false;
-        if(!SetGroundGeneralisation.exists(this.equivalences, f.getEquivalences()))
+        if(!SetIRIGeneralisation.exists(this.equivalences, f.getEquivalences()))
             return false;
-        if(!SetGroundGeneralisation.exists(this.disjointClasses, f.getDisjointClasses()))
+        if(!SetIRIGeneralisation.exists(this.disjointClasses, f.getDisjointClasses()))
             return false;
-        if(!SetGroundGeneralisation.exists(this.disjointUnion, f.getDisjointUnions()))
+        if(!SetIRIGeneralisation.exists(this.disjointUnion, f.getDisjointUnions()))
             return false;
 
         Set<SyntaxTree> allHere = new HashSet<>();
@@ -190,6 +191,7 @@ public class ClassFrameRenaming {
         allThere.addAll(f.getDisjointClasses());
 
         return SetRenaming.exists(allHere,allThere); 
+        //return SetRenamingEdges.exists(allHere,allThere);
     } 
 
     private int getSpecificity(Set<SyntaxTree> ts){
