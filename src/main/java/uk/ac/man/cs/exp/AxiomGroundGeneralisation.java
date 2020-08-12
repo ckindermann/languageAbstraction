@@ -62,7 +62,7 @@ public class AxiomGroundGeneralisation {
 
         MyTimer timer = new MyTimer();
         timer.go();
-        AxiomGroundGeneralisations ggs= new AxiomGroundGeneralisations(ont);
+        GroundGeneralisationMiner ggs= new GroundGeneralisationMiner(ont);
         log.info(timer.stop("GG " + ontologyName));
 
         int regularities = ggs.getRegularity2instance().size();

@@ -62,7 +62,7 @@ public class AxiomCEPreservation {
 
         MyTimer timer = new MyTimer();
         timer.go();
-        AxiomCEPreservations ceps= new AxiomCEPreservations(ont);
+        CEPreservationMiner ceps= new CEPreservationMiner(ont);
         log.info(timer.stop("CEP " + ontologyName));
 
         int regularities = ceps.getRegularity2instance().size();

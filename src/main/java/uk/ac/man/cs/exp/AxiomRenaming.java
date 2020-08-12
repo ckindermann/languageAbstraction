@@ -62,7 +62,7 @@ public class AxiomRenaming {
 
         MyTimer timer = new MyTimer();
         timer.go();
-        AxiomRenamings renamings= new AxiomRenamings(ont);
+        RenamingMiner renamings= new RenamingMiner(ont);
         log.info(timer.stop("Renaming " + ontologyName));
 
         int regularities = renamings.getRegularity2instance().size();

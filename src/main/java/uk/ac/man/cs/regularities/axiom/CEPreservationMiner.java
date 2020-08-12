@@ -3,9 +3,10 @@ package uk.ac.man.cs.regularities.axiom;
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.parser.*;
 import uk.ac.man.cs.util.*;
-import uk.ac.man.cs.iso.renaming.*;
+import uk.ac.man.cs.iso.cep.*;
 import uk.ac.man.cs.structure.*;
 import uk.ac.man.cs.structure.nodes.*;
+import uk.ac.man.cs.parser.*;
 
 import java.io.*;
 import java.util.*;
@@ -38,11 +39,7 @@ import org.jgrapht.traverse.*;
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 
-/**
- * Pattern 
- */
-
-public class AxiomRenamings {
+public class CEPreservationMiner {
 
     private OWLOntology ontology;
 
@@ -52,10 +49,12 @@ public class AxiomRenamings {
     private Map<OWLAxiom,SyntaxTree> axiom2regularity;
     private Map<SyntaxTree,Set<OWLAxiom>> regularity2instances;
 
-    private SyntaxTreeBuilder treeBuilder;
+    //NB: the abstraction is done via the parser
+    private CEPreservanceBuilder treeBuilder;
 
-    public AxiomRenamings(OWLOntology o) throws Exception {
+    public CEPreservationMiner(OWLOntology o) throws Exception {
         this.ontology = o;
+        this.treeBuilder = new CEPreservanceBuilder();
         this.stratify(); 
         this.mine();
     }
@@ -89,7 +88,7 @@ public class AxiomRenamings {
                 OWLAxiom a = ((AxiomNode) t.getRoot()).getAxiom();
                 boolean found = false;
                 for(SyntaxTree r : regs){
-                    if(Renaming.exists(t,r)){
+                    if(ClassExpressionPreservance.exists(t,r)){
                         this.axiom2regularity.put(a,r);
                         this.regularity2instances.get(r).add(a); 
                         found = true;
@@ -113,9 +112,8 @@ public class AxiomRenamings {
         toTest.addAll(this.ontology.getAxioms(AxiomType.DISJOINT_CLASSES, Imports.INCLUDED));
 
         this.specificity2tree = new TreeMap();
-        SyntaxTreeBuilder treeBuilder = new SyntaxTreeBuilder();
         for(OWLAxiom a : toTest){
-            SyntaxTree t = treeBuilder.build(a);
+            SyntaxTree t = this.treeBuilder.build(a);
             int specificity = this.getSpecificity(t);
             specificity2tree.putIfAbsent(specificity, new HashSet<>());
             specificity2tree.get(specificity).add(t);
@@ -126,4 +124,5 @@ public class AxiomRenamings {
         SimpleDirectedGraph<SyntaxNode,DefaultEdge> graph = t.getTree();
         return graph.vertexSet().size(); 
     } 
+
 }

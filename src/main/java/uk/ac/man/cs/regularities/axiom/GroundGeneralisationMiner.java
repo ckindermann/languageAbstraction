@@ -3,10 +3,9 @@ package uk.ac.man.cs.regularities.axiom;
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.parser.*;
 import uk.ac.man.cs.util.*;
-import uk.ac.man.cs.iso.cep.*;
+import uk.ac.man.cs.iso.gg.*;
 import uk.ac.man.cs.structure.*;
 import uk.ac.man.cs.structure.nodes.*;
-import uk.ac.man.cs.parser.*;
 
 import java.io.*;
 import java.util.*;
@@ -39,7 +38,11 @@ import org.jgrapht.traverse.*;
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 
-public class AxiomCEPreservations {
+/**
+ * Pattern 
+ */
+
+public class GroundGeneralisationMiner {
 
     private OWLOntology ontology;
 
@@ -49,12 +52,10 @@ public class AxiomCEPreservations {
     private Map<OWLAxiom,SyntaxTree> axiom2regularity;
     private Map<SyntaxTree,Set<OWLAxiom>> regularity2instances;
 
-    //NB: the abstraction is done via the parser
-    private CEPreservanceBuilder treeBuilder;
+    private SyntaxTreeBuilder treeBuilder;
 
-    public AxiomCEPreservations(OWLOntology o) throws Exception {
+    public GroundGeneralisationMiner(OWLOntology o) {
         this.ontology = o;
-        this.treeBuilder = new CEPreservanceBuilder();
         this.stratify(); 
         this.mine();
     }
@@ -67,7 +68,7 @@ public class AxiomCEPreservations {
         return this.regularity2instances;
     }
 
-    private void mine() throws Exception {
+    private void mine() {
         this.specificity2regularity = new TreeMap<>();
 
         this.axiom2regularity = new HashMap();
@@ -88,7 +89,7 @@ public class AxiomCEPreservations {
                 OWLAxiom a = ((AxiomNode) t.getRoot()).getAxiom();
                 boolean found = false;
                 for(SyntaxTree r : regs){
-                    if(ClassExpressionPreservance.exists(t,r)){
+                    if(GroundGeneralisation.exists(t,r)){
                         this.axiom2regularity.put(a,r);
                         this.regularity2instances.get(r).add(a); 
                         found = true;
@@ -112,8 +113,9 @@ public class AxiomCEPreservations {
         toTest.addAll(this.ontology.getAxioms(AxiomType.DISJOINT_CLASSES, Imports.INCLUDED));
 
         this.specificity2tree = new TreeMap();
+        SyntaxTreeBuilder treeBuilder = new SyntaxTreeBuilder();
         for(OWLAxiom a : toTest){
-            SyntaxTree t = this.treeBuilder.build(a);
+            SyntaxTree t = treeBuilder.build(a);
             int specificity = this.getSpecificity(t);
             specificity2tree.putIfAbsent(specificity, new HashSet<>());
             specificity2tree.get(specificity).add(t);
@@ -124,5 +126,4 @@ public class AxiomCEPreservations {
         SimpleDirectedGraph<SyntaxNode,DefaultEdge> graph = t.getTree();
         return graph.vertexSet().size(); 
     } 
-
 }

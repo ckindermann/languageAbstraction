@@ -3,7 +3,7 @@ package uk.ac.man.cs.regularities.axiom;
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.parser.*;
 import uk.ac.man.cs.util.*;
-import uk.ac.man.cs.iso.gg.*;
+import uk.ac.man.cs.iso.renaming.*;
 import uk.ac.man.cs.structure.*;
 import uk.ac.man.cs.structure.nodes.*;
 
@@ -42,7 +42,7 @@ import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
  * Pattern 
  */
 
-public class AxiomGroundGeneralisations {
+public class RenamingMiner {
 
     private OWLOntology ontology;
 
@@ -54,7 +54,7 @@ public class AxiomGroundGeneralisations {
 
     private SyntaxTreeBuilder treeBuilder;
 
-    public AxiomGroundGeneralisations(OWLOntology o) {
+    public RenamingMiner(OWLOntology o) throws Exception {
         this.ontology = o;
         this.stratify(); 
         this.mine();
@@ -68,7 +68,7 @@ public class AxiomGroundGeneralisations {
         return this.regularity2instances;
     }
 
-    private void mine() {
+    private void mine() throws Exception {
         this.specificity2regularity = new TreeMap<>();
 
         this.axiom2regularity = new HashMap();
@@ -89,7 +89,7 @@ public class AxiomGroundGeneralisations {
                 OWLAxiom a = ((AxiomNode) t.getRoot()).getAxiom();
                 boolean found = false;
                 for(SyntaxTree r : regs){
-                    if(GroundGeneralisation.exists(t,r)){
+                    if(Renaming.exists(t,r)){
                         this.axiom2regularity.put(a,r);
                         this.regularity2instances.get(r).add(a); 
                         found = true;
