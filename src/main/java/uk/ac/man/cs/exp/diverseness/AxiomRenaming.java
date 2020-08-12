@@ -1,5 +1,4 @@
-package uk.ac.man.cs.exp;
-
+package uk.ac.man.cs.exp.diverseness;
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;
@@ -7,7 +6,7 @@ import uk.ac.man.cs.regularities.axiom.*;
 import uk.ac.man.cs.parser.*;
 import uk.ac.man.cs.structure.*;
 import uk.ac.man.cs.structure.nodes.*;
-import uk.ac.man.cs.iso.cep.*;
+import uk.ac.man.cs.iso.renaming.*;
 
 import java.io.*;
 import java.util.*;
@@ -44,9 +43,9 @@ import org.jgrapht.traverse.*;
 /**
  * A class to demonstrate the functionality of the library.
  */
-public class AxiomCEPreservation {
+public class AxiomRenaming {
 
-    private static final Logger log = Logger.getLogger(String.valueOf(AxiomCEPreservation.class));
+    private static final Logger log = Logger.getLogger(String.valueOf(AxiomRenaming.class));
 
     public static void main(String[] args) throws IOException , Exception{
 
@@ -62,11 +61,11 @@ public class AxiomCEPreservation {
 
         MyTimer timer = new MyTimer();
         timer.go();
-        CEPreservationMiner ceps= new CEPreservationMiner(ont);
-        log.info(timer.stop("CEP " + ontologyName));
+        RenamingMiner renamings= new RenamingMiner(ont);
+        log.info(timer.stop("Renaming " + ontologyName));
 
-        int regularities = ceps.getRegularity2instance().size();
-        System.out.println("size : " + ceps.getRegularity2instance().size());
-        IOHelper.writeAppend(ontologyName + "," + regularities, output + "/classExpressionPreservance"); 
+        int regularities = renamings.getRegularity2instance().size();
+        System.out.println("size : " + renamings.getRegularity2instance().size());
+        IOHelper.writeAppend(ontologyName + "," + regularities, output + "/renaming"); 
     }
 }

@@ -1,4 +1,4 @@
-package uk.ac.man.cs.exp;
+package uk.ac.man.cs.exp.diverseness;
 
 
 import uk.ac.man.cs.ont.*;
@@ -7,7 +7,7 @@ import uk.ac.man.cs.regularities.axiom.*;
 import uk.ac.man.cs.parser.*;
 import uk.ac.man.cs.structure.*;
 import uk.ac.man.cs.structure.nodes.*;
-import uk.ac.man.cs.iso.renaming.*;
+import uk.ac.man.cs.iso.cep.*;
 
 import java.io.*;
 import java.util.*;
@@ -44,9 +44,9 @@ import org.jgrapht.traverse.*;
 /**
  * A class to demonstrate the functionality of the library.
  */
-public class AxiomRenaming {
+public class AxiomCEPreservation {
 
-    private static final Logger log = Logger.getLogger(String.valueOf(AxiomRenaming.class));
+    private static final Logger log = Logger.getLogger(String.valueOf(AxiomCEPreservation.class));
 
     public static void main(String[] args) throws IOException , Exception{
 
@@ -54,7 +54,7 @@ public class AxiomRenaming {
         String output = args[1]; 
 
         File ontFile = new File(ontFilePath);
-        log.info("\tLoading Ontology : " + ontFile.getName()); 
+        //log.info("\tLoading Ontology : " + ontFile.getName()); 
         OntologyLoader ontLoader = new OntologyLoader(ontFile, true);
         OWLOntology ont = ontLoader.getOntology(); 
 
@@ -62,11 +62,11 @@ public class AxiomRenaming {
 
         MyTimer timer = new MyTimer();
         timer.go();
-        RenamingMiner renamings= new RenamingMiner(ont);
-        log.info(timer.stop("Renaming " + ontologyName));
+        CEPreservationMiner ceps= new CEPreservationMiner(ont);
+        log.info(timer.stop("CEP for " + ontologyName));
 
-        int regularities = renamings.getRegularity2instance().size();
-        System.out.println("size : " + renamings.getRegularity2instance().size());
-        IOHelper.writeAppend(ontologyName + "," + regularities, output + "/renaming"); 
+        int regularities = ceps.getRegularity2instance().size();
+        //System.out.println("size : " + ceps.getRegularity2instance().size());
+        IOHelper.writeAppend(ontologyName + "," + regularities, output + "/classExpressionPreservance"); 
     }
 }
