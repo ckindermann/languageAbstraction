@@ -147,7 +147,7 @@ public class AxiomIRIGeneralisation {
 
                 double test = coverage.size() / (double) this.classAxioms;
                 if(test >= this.threshold){
-                    break;
+                    return kRegularity;
                 }
             } 
         } 
