@@ -1,4 +1,4 @@
-package uk.ac.man.cs.exp.diverseness;
+package uk.ac.man.cs.exp.axioms.diverseness;
 
 
 import uk.ac.man.cs.ont.*;

@@ -1,4 +1,4 @@
-package uk.ac.man.cs.exp.coverage;
+package uk.ac.man.cs.exp.axioms.coverage;
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;
@@ -43,9 +43,9 @@ import org.jgrapht.traverse.*;
 /**
  * A class to demonstrate the functionality of the library.
  */
-public class AxiomIRIGeneralisation {
+public class AxiomGroundGeneralisation {
 
-    private static final Logger log = Logger.getLogger(String.valueOf(AxiomIRIGeneralisation.class));
+    private static final Logger log = Logger.getLogger(String.valueOf(AxiomGroundGeneralisation.class));
 
     public static void main(String[] args) throws IOException , Exception{
 
@@ -60,14 +60,14 @@ public class AxiomIRIGeneralisation {
 
         MyTimer timer = new MyTimer();
         timer.go();
-        AxiomIRIGeneralisation coverage = new AxiomIRIGeneralisation(ont,0.9);
-        log.info(timer.stop("IRIGeneralisation for "  + ontologyName));
+        AxiomGroundGeneralisation coverage = new AxiomGroundGeneralisation(ont,0.9);
+        log.info(timer.stop("GroundGeneralisation for "  + ontologyName));
 
         TreeMap<Integer,Set<SyntaxTree>> kCoverage = coverage.getKCoverage();
         //format : ontology name, k, r_1,r_2...,r_k
         int classAxiomSize = coverage.getClassAxiomSize();
-        String iriGeneralisationFolder = output + "/IRIGeneralisationCoverage";
-        IOHelper.createFolder(iriGeneralisationFolder);
+        String groundGeneralisationFolder = output + "/groundGeneralisationCoverage";
+        IOHelper.createFolder(groundGeneralisationFolder);
 
         String formatRenaming = ontologyName + "," + kCoverage.size() + ","; 
         for(Map.Entry<Integer,Set<SyntaxTree>> entry : kCoverage.entrySet()){
@@ -78,25 +78,25 @@ public class AxiomIRIGeneralisation {
                 formatRenaming += prominence + ",";
                 //Record: prominence + axiom
                 IOHelper.writeAppend(prominence + "," + r.getRoot().toString(),
-                        iriGeneralisationFolder + "/" + ontologyName); 
+                        groundGeneralisationFolder + "/" + ontologyName); 
             }
         } 
         //summary file
-        IOHelper.writeAppend(formatRenaming, output + "/IRIGeneralisation");
+        IOHelper.writeAppend(formatRenaming, output + "/groundGeneralisation");
 
     }
 
     private OWLOntology ontology;
-    private IRIGeneralisationMiner miner;
+    private GroundGeneralisationMiner miner;
 
     private double threshold;
 
     private int logicalAxioms;
     private int classAxioms;
 
-    public AxiomIRIGeneralisation(OWLOntology o, double t){
+    public AxiomGroundGeneralisation(OWLOntology o, double t){
         this.setOntology(o);
-        this.miner = new IRIGeneralisationMiner(o);
+        this.miner = new GroundGeneralisationMiner(o);
         this.threshold = t; 
     } 
 

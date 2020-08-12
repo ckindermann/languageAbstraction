@@ -1,4 +1,4 @@
-package uk.ac.man.cs.exp.diverseness;
+package uk.ac.man.cs.exp.axioms.diverseness;
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;
@@ -6,7 +6,7 @@ import uk.ac.man.cs.regularities.axiom.*;
 import uk.ac.man.cs.parser.*;
 import uk.ac.man.cs.structure.*;
 import uk.ac.man.cs.structure.nodes.*;
-import uk.ac.man.cs.iso.irig.*;
+import uk.ac.man.cs.iso.renaming.*;
 
 import java.io.*;
 import java.util.*;
@@ -43,7 +43,7 @@ import org.jgrapht.traverse.*;
 /**
  * A class to demonstrate the functionality of the library.
  */
-public class AxiomIRIGeneralisation {
+public class AxiomRenaming {
 
     private static final Logger log = Logger.getLogger(String.valueOf(AxiomRenaming.class));
 
@@ -53,7 +53,7 @@ public class AxiomIRIGeneralisation {
         String output = args[1]; 
 
         File ontFile = new File(ontFilePath);
-        //log.info("\tLoading Ontology : " + ontFile.getName()); 
+        log.info("\tLoading Ontology : " + ontFile.getName()); 
         OntologyLoader ontLoader = new OntologyLoader(ontFile, true);
         OWLOntology ont = ontLoader.getOntology(); 
 
@@ -61,11 +61,11 @@ public class AxiomIRIGeneralisation {
 
         MyTimer timer = new MyTimer();
         timer.go();
-        IRIGeneralisationMiner renamings= new IRIGeneralisationMiner(ont);
-        log.info(timer.stop("IRIGeneralisation for "  + ontologyName));
+        RenamingMiner renamings= new RenamingMiner(ont);
+        log.info(timer.stop("Renaming " + ontologyName));
 
         int regularities = renamings.getRegularity2instance().size();
-        //System.out.println("size : " + renamings.getRegularity2instance().size());
-        IOHelper.writeAppend(ontologyName + "," + regularities, output + "/IRIGeneralisation"); 
+        System.out.println("size : " + renamings.getRegularity2instance().size());
+        IOHelper.writeAppend(ontologyName + "," + regularities, output + "/renaming"); 
     }
 }

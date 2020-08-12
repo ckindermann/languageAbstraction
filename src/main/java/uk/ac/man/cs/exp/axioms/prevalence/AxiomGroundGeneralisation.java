@@ -1,4 +1,4 @@
-package uk.ac.man.cs.exp.prevalence;
+package uk.ac.man.cs.exp.axioms.prevalence;
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;
@@ -6,7 +6,7 @@ import uk.ac.man.cs.regularities.axiom.*;
 import uk.ac.man.cs.parser.*;
 import uk.ac.man.cs.structure.*;
 import uk.ac.man.cs.structure.nodes.*;
-import uk.ac.man.cs.iso.irig.*;
+import uk.ac.man.cs.iso.gg.*;
 
 import java.io.*;
 import java.util.*;
@@ -43,9 +43,9 @@ import org.jgrapht.traverse.*;
 /**
  * A class to demonstrate the functionality of the library.
  */
-public class AxiomIRIGeneralisation {
+public class AxiomGroundGeneralisation {
 
-    private static final Logger log = Logger.getLogger(String.valueOf(AxiomIRIGeneralisation.class));
+    private static final Logger log = Logger.getLogger(String.valueOf(AxiomGroundGeneralisation.class));
 
     public static void main(String[] args) throws IOException , Exception{
 
@@ -60,26 +60,26 @@ public class AxiomIRIGeneralisation {
 
         MyTimer timer = new MyTimer();
         timer.go();
-        AxiomIRIGeneralisation prevalence = new AxiomIRIGeneralisation(ont,0.1);
-        log.info(timer.stop("IRIGeneralisation for "  + ontologyName));
+        AxiomGroundGeneralisation prevalence = new AxiomGroundGeneralisation(ont,0.1);
+        log.info(timer.stop("GroundGeneralisation for "  + ontologyName));
 
         Map<SyntaxTree,Set<OWLAxiom>> prevalentIRIgeneralisations = prevalence.getPrevalentRegularities();
         int prevalent = prevalentIRIgeneralisations.size();
 
-        IOHelper.writeAppend(ontologyName + "," + prevalent, output + "/IRIGeneralisation"); 
+        IOHelper.writeAppend(ontologyName + "," + prevalent, output + "/groundGeneralisation"); 
     }
 
     private OWLOntology ontology;
-    private IRIGeneralisationMiner miner;
+    private GroundGeneralisationMiner miner;
 
     private double threshold;
 
     private int logicalAxioms;
     private int classAxioms;
 
-    public AxiomIRIGeneralisation(OWLOntology o, double t){
+    public AxiomGroundGeneralisation(OWLOntology o, double t){
         this.setOntology(o);
-        this.miner = new IRIGeneralisationMiner(o);
+        this.miner = new GroundGeneralisationMiner(o);
         this.threshold = t; 
     } 
 

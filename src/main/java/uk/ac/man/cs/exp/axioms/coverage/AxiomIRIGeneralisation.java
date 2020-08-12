@@ -1,4 +1,4 @@
-package uk.ac.man.cs.exp.prevalence;
+package uk.ac.man.cs.exp.axioms.coverage;
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;
@@ -6,7 +6,7 @@ import uk.ac.man.cs.regularities.axiom.*;
 import uk.ac.man.cs.parser.*;
 import uk.ac.man.cs.structure.*;
 import uk.ac.man.cs.structure.nodes.*;
-import uk.ac.man.cs.iso.gg.*;
+import uk.ac.man.cs.iso.irig.*;
 
 import java.io.*;
 import java.util.*;
@@ -43,9 +43,9 @@ import org.jgrapht.traverse.*;
 /**
  * A class to demonstrate the functionality of the library.
  */
-public class AxiomGroundGeneralisation {
+public class AxiomIRIGeneralisation {
 
-    private static final Logger log = Logger.getLogger(String.valueOf(AxiomGroundGeneralisation.class));
+    private static final Logger log = Logger.getLogger(String.valueOf(AxiomIRIGeneralisation.class));
 
     public static void main(String[] args) throws IOException , Exception{
 
@@ -60,26 +60,43 @@ public class AxiomGroundGeneralisation {
 
         MyTimer timer = new MyTimer();
         timer.go();
-        AxiomGroundGeneralisation prevalence = new AxiomGroundGeneralisation(ont,0.1);
-        log.info(timer.stop("GroundGeneralisation for "  + ontologyName));
+        AxiomIRIGeneralisation coverage = new AxiomIRIGeneralisation(ont,0.9);
+        log.info(timer.stop("IRIGeneralisation for "  + ontologyName));
 
-        Map<SyntaxTree,Set<OWLAxiom>> prevalentIRIgeneralisations = prevalence.getPrevalentRegularities();
-        int prevalent = prevalentIRIgeneralisations.size();
+        TreeMap<Integer,Set<SyntaxTree>> kCoverage = coverage.getKCoverage();
+        //format : ontology name, k, r_1,r_2...,r_k
+        int classAxiomSize = coverage.getClassAxiomSize();
+        String iriGeneralisationFolder = output + "/IRIGeneralisationCoverage";
+        IOHelper.createFolder(iriGeneralisationFolder);
 
-        IOHelper.writeAppend(ontologyName + "," + prevalent, output + "/groundGeneralisation"); 
+        String formatRenaming = ontologyName + "," + kCoverage.size() + ","; 
+        for(Map.Entry<Integer,Set<SyntaxTree>> entry : kCoverage.entrySet()){
+            int size = entry.getKey();
+            Set<SyntaxTree> regularities = entry.getValue(); 
+            for(SyntaxTree r : regularities){
+                double prominence = size / (double) classAxiomSize;
+                formatRenaming += prominence + ",";
+                //Record: prominence + axiom
+                IOHelper.writeAppend(prominence + "," + r.getRoot().toString(),
+                        iriGeneralisationFolder + "/" + ontologyName); 
+            }
+        } 
+        //summary file
+        IOHelper.writeAppend(formatRenaming, output + "/IRIGeneralisation");
+
     }
 
     private OWLOntology ontology;
-    private GroundGeneralisationMiner miner;
+    private IRIGeneralisationMiner miner;
 
     private double threshold;
 
     private int logicalAxioms;
     private int classAxioms;
 
-    public AxiomGroundGeneralisation(OWLOntology o, double t){
+    public AxiomIRIGeneralisation(OWLOntology o, double t){
         this.setOntology(o);
-        this.miner = new GroundGeneralisationMiner(o);
+        this.miner = new IRIGeneralisationMiner(o);
         this.threshold = t; 
     } 
 
@@ -97,16 +114,43 @@ public class AxiomGroundGeneralisation {
         this.logicalAxioms = this.ontology.getLogicalAxioms(true).size(); 
     } 
 
-    public Map<SyntaxTree,Set<OWLAxiom>> getPrevalentRegularities(){
-        Map<SyntaxTree,Set<OWLAxiom>> prevalent = new HashMap<>();
+    public int getClassAxiomSize(){
+        return this.classAxioms;
+    }
+
+    public TreeMap<Integer,Set<SyntaxTree>> getKCoverage(){
+
         Map<SyntaxTree,Set<OWLAxiom>> reg2instance = this.miner.getRegularity2instance();
+        //order regularities according to size (largest first)
+        TreeMap<Integer,Set<SyntaxTree>> size2regularity = new TreeMap(Collections.reverseOrder()); 
         for(SyntaxTree reg : reg2instance.keySet()){
             Set<OWLAxiom> instances = reg2instance.get(reg);
-            double test = instances.size() / (double) this.classAxioms;
-            if(test >= this.threshold){
-                prevalent.put(reg,instances);
+            int size = instances.size();
+            size2regularity.putIfAbsent(size,new HashSet<>());
+            size2regularity.get(size).add(reg);
+        } 
+
+        //iterate according to regularities' size
+        //until threshold is reached
+        //record involved regularities
+        TreeMap<Integer,Set<SyntaxTree>> kRegularity = new TreeMap(Collections.reverseOrder()); 
+        Set<OWLAxiom> coverage = new HashSet<>();//this will be necessary for 'sets of axioms'
+        for(Map.Entry<Integer,Set<SyntaxTree>> entry : size2regularity.entrySet()){
+            Integer size = entry.getKey();
+            Set<SyntaxTree> nodes2insert = entry.getValue();
+
+            for(SyntaxTree t : nodes2insert){
+
+                coverage.addAll(reg2instance.get(t));
+                kRegularity.putIfAbsent(size,new HashSet<>());
+                kRegularity.get(size).add(t);
+
+                double test = coverage.size() / (double) this.classAxioms;
+                if(test >= this.threshold){
+                    break;
+                }
             } 
         } 
-        return prevalent;
-    }
+        return kRegularity;
+    } 
 }

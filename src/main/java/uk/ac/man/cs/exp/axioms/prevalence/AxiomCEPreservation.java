@@ -1,4 +1,4 @@
-package uk.ac.man.cs.exp.prevalence;
+package uk.ac.man.cs.exp.axioms.prevalence;
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;

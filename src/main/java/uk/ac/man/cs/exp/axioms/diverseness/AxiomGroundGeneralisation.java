@@ -1,4 +1,5 @@
-package uk.ac.man.cs.exp.diverseness;
+package uk.ac.man.cs.exp.axioms.diverseness;
+
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;
@@ -6,7 +7,7 @@ import uk.ac.man.cs.regularities.axiom.*;
 import uk.ac.man.cs.parser.*;
 import uk.ac.man.cs.structure.*;
 import uk.ac.man.cs.structure.nodes.*;
-import uk.ac.man.cs.iso.renaming.*;
+import uk.ac.man.cs.iso.gg.*;
 
 import java.io.*;
 import java.util.*;
@@ -43,9 +44,9 @@ import org.jgrapht.traverse.*;
 /**
  * A class to demonstrate the functionality of the library.
  */
-public class AxiomRenaming {
+public class AxiomGroundGeneralisation {
 
-    private static final Logger log = Logger.getLogger(String.valueOf(AxiomRenaming.class));
+    private static final Logger log = Logger.getLogger(String.valueOf(AxiomGroundGeneralisation.class));
 
     public static void main(String[] args) throws IOException , Exception{
 
@@ -53,7 +54,7 @@ public class AxiomRenaming {
         String output = args[1]; 
 
         File ontFile = new File(ontFilePath);
-        log.info("\tLoading Ontology : " + ontFile.getName()); 
+        //log.info("\tLoading Ontology : " + ontFile.getName()); 
         OntologyLoader ontLoader = new OntologyLoader(ontFile, true);
         OWLOntology ont = ontLoader.getOntology(); 
 
@@ -61,11 +62,11 @@ public class AxiomRenaming {
 
         MyTimer timer = new MyTimer();
         timer.go();
-        RenamingMiner renamings= new RenamingMiner(ont);
-        log.info(timer.stop("Renaming " + ontologyName));
+        GroundGeneralisationMiner ggs= new GroundGeneralisationMiner(ont);
+        log.info(timer.stop("GG for " + ontologyName));
 
-        int regularities = renamings.getRegularity2instance().size();
-        System.out.println("size : " + renamings.getRegularity2instance().size());
-        IOHelper.writeAppend(ontologyName + "," + regularities, output + "/renaming"); 
+        int regularities = ggs.getRegularity2instance().size();
+        //System.out.println("size : " + ggs.getRegularity2instance().size());
+        IOHelper.writeAppend(ontologyName + "," + regularities, output + "/groundGeneralisation"); 
     }
 }

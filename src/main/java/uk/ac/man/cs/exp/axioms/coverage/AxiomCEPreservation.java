@@ -1,4 +1,4 @@
-package uk.ac.man.cs.exp.coverage;
+package uk.ac.man.cs.exp.axioms.coverage;
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;
