@@ -44,8 +44,8 @@ import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 public class ClassFrameRenamingMiner {
 
     private OWLOntology ontology;
-    private TreeMap<Integer,Set<ClassFrameRenaming>> specificity2frames;
-    private TreeMap<Integer,Set<ClassFrameRenaming>> specificity2regularity;
+    private Map<ClassFrameRenamingStratum,Set<ClassFrameRenaming>> stratum2frames;
+    private Map<ClassFrameRenamingStratum,Set<ClassFrameRenaming>> stratum2regularity;
 
     private Map<ClassFrameRenaming,ClassFrameRenaming> instance2regularity;
     private Map<ClassFrameRenaming,Set<ClassFrameRenaming>> regularity2instances;
@@ -55,7 +55,8 @@ public class ClassFrameRenamingMiner {
         this.ontology = o;
         ClassFrameMiner cfminer = new ClassFrameMiner(o);
         Map<OWLClassExpression,ClassFrame> map = cfminer.getFrames();
-        this.stratifyBySize(new HashSet<>(map.values()));//is this inefficient?
+        //this.stratifyBySize(new HashSet<>(map.values()));//is this inefficient?
+        this.stratify(new HashSet<>(map.values()));//is this inefficient?
         this.mine(); 
     }
 
@@ -64,22 +65,27 @@ public class ClassFrameRenamingMiner {
     }
 
     private void mine() {
-        this.specificity2regularity = new TreeMap<>();
+        this.stratum2regularity = new HashMap<>();
 
         this.instance2regularity = new HashMap<>();
         this.regularity2instances = new HashMap<>();
 
-        System.out.println("Work : " + this.specificity2frames.size());
+        //TODO: parralelise this
+
+        //pass Set<ClassFrameRenaming>
+        //pass instance2regularity
+        //pass regularity2instances
+        System.out.println("Work : " + this.stratum2frames.size());
         int i = 1;
-        for(Map.Entry<Integer,Set<ClassFrameRenaming>> entry : this.specificity2frames.entrySet()){
+        for(Map.Entry<ClassFrameRenamingStratum,Set<ClassFrameRenaming>> entry : this.stratum2frames.entrySet()){
 
-            System.out.println("Done : " + i++);
 
-            int specificity = entry.getKey();//get stratum identifier
-            Set<ClassFrameRenaming> toPartition = entry.getValue();//get stratum
+            ClassFrameRenamingStratum stratum = entry.getKey();//get stratum identifier
+            Set<ClassFrameRenaming> toPartition = entry.getValue();//get stratum 
 
-            this.specificity2regularity.putIfAbsent(specificity,new HashSet<>());
-            Set<ClassFrameRenaming> regs = this.specificity2regularity.get(specificity);
+            this.stratum2regularity.putIfAbsent(stratum,new HashSet<>());
+            Set<ClassFrameRenaming> regs = this.stratum2regularity.get(stratum);
+            System.out.println("toPartition next : " + toPartition.size());
 
             for(ClassFrameRenaming frame : toPartition){
                 boolean found = false;
@@ -97,31 +103,55 @@ public class ClassFrameRenamingMiner {
                     regs.add(frame);
                 }
             } 
-        }
+            System.out.println("Done : " + i++);
+            System.out.println("Regs found : " + regs.size());
 
+            /*
+            if(i-1 == 20){
+                for(ClassFrameRenaming r : regs){
+                    System.out.println("================");
+                    System.out.println("REGULARITY : " + r.toString());
+                    for(ClassFrameRenaming s : this.regularity2instances.get(r)){
+                        System.out.println("Instance : " + s.toString()); 
+                    } 
+                    System.out.println("================");
+                }
+            }*/
+        } 
     }
 
-    private void stratifyBySize(Set<ClassFrame> framesToTest){
-        this.specificity2frames = new TreeMap<>(); 
+    private void stratify(Set<ClassFrame> framesToTest){
+        this.stratum2frames = new HashMap<>();
         for(ClassFrame f : framesToTest){
             ClassFrameRenaming fr = new ClassFrameRenaming(f);
-            int specificity = this.getSpecificity(fr);
-            this.specificity2frames.putIfAbsent(specificity, new HashSet<>());
-            this.specificity2frames.get(specificity).add(fr);
+            ClassFrameRenamingStratum stratum = new ClassFrameRenamingStratum(fr);
+            this.stratum2frames.putIfAbsent(stratum, new HashSet<>());
+            this.stratum2frames.get(stratum).add(fr); 
         }
+
     }
 
-    private int getSpecificity(ClassFrameRenaming f){ 
-        int specificity = 0;
-        for(SyntaxTree t : f.getTrees()){
-            specificity += getSpecificity(t);
-        } 
-        return specificity;
-    }
+    //private void stratifyBySize(Set<ClassFrame> framesToTest){
+    //    this.specificity2frames = new TreeMap<>(); 
+    //    for(ClassFrame f : framesToTest){
+    //        ClassFrameRenaming fr = new ClassFrameRenaming(f);
+    //        int specificity = this.getSpecificity(fr);
+    //        this.specificity2frames.putIfAbsent(specificity, new HashSet<>());
+    //        this.specificity2frames.get(specificity).add(fr);
+    //    }
+    //}
 
-    private int getSpecificity(SyntaxTree t){
-        SimpleDirectedGraph<SyntaxNode,DefaultEdge> graph = t.getTree();
-        return graph.vertexSet().size(); 
-    } 
+    //private int getSpecificity(ClassFrameRenaming f){ 
+    //    int specificity = 0;
+    //    for(SyntaxTree t : f.getTrees()){
+    //        specificity += getSpecificity(t);
+    //    } 
+    //    return specificity;
+    //}
+
+    //private int getSpecificity(SyntaxTree t){
+    //    SimpleDirectedGraph<SyntaxNode,DefaultEdge> graph = t.getTree();
+    //    return graph.vertexSet().size(); 
+    //} 
 }
 
