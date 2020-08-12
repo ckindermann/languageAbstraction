@@ -79,6 +79,15 @@ public class ClassFrame {
         return this.disjointClasses;
     } 
 
+    public Set<OWLAxiom> getAxioms(){
+        Set<OWLAxiom> res = new HashSet<>();
+        res.addAll(this.superclasses);
+        res.addAll(this.equivalences);
+        res.addAll(this.disjointUnion);
+        res.addAll(this.disjointClasses);
+        return res; 
+    }
+
     public void addSuperclass(OWLSubClassOfAxiom c){
         this.superclasses.add(c);
     } 

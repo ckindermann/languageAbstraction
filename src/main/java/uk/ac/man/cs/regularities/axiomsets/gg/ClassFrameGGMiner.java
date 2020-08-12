@@ -3,7 +3,6 @@ package uk.ac.man.cs.regularities.axiomsets.gg;
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.parser.*;
 import uk.ac.man.cs.util.*;
-import uk.ac.man.cs.iso.renaming.*;
 import uk.ac.man.cs.iso.gg.*;
 import uk.ac.man.cs.structure.*;
 import uk.ac.man.cs.structure.nodes.*;
@@ -38,9 +37,6 @@ import org.jgrapht.graph.*;
 import org.jgrapht.traverse.*;
 
 
-import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
-import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
-
 public class ClassFrameGGMiner {
 
     private OWLOntology ontology;
@@ -50,17 +46,22 @@ public class ClassFrameGGMiner {
     private Map<ClassFrameGroundGeneralisation,ClassFrameGroundGeneralisation> instance2regularity;
     private Map<ClassFrameGroundGeneralisation,Set<ClassFrameGroundGeneralisation>> regularity2instances;
 
+    private Map<OWLClassExpression,ClassFrame> class2frame; 
 
     public ClassFrameGGMiner(OWLOntology o){
         this.ontology = o;
         ClassFrameMiner cfminer = new ClassFrameMiner(o);
-        Map<OWLClassExpression,ClassFrame> map = cfminer.getFrames();
-        this.stratifyBySize(new HashSet<>(map.values()));//is this inefficient?
+        this.class2frame = cfminer.getFrames();
+        this.stratifyBySize(new HashSet<>(this.class2frame.values()));//is this inefficient?
         this.mine(); 
     }
 
     public Map<ClassFrameGroundGeneralisation,Set<ClassFrameGroundGeneralisation>> getRegularity2instance(){
         return this.regularity2instances;
+    }
+
+    public Map<OWLClassExpression,ClassFrame> getClass2Frame(){
+        return this.class2frame;
     }
 
     private void mine() {
