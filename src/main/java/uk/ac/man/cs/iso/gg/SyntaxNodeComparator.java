@@ -93,7 +93,7 @@ public class SyntaxNodeComparator implements Comparator<SyntaxNode> {
 
 
     private int compareLiteralNode(LiteralNode n1, LiteralNode n2){ 
-        if(n1.getLiteral().getClass() == n2.getLiteral().getClass())
+        if(n1.getLiteral().getClass() == n2.getLiteral().getClass())//TODO: print this
             return 0;
         return -1;
     }
@@ -105,13 +105,13 @@ public class SyntaxNodeComparator implements Comparator<SyntaxNode> {
     }
 
     private int compareFacetRestrictionNode(FacetRestrictionNode n1, FacetRestrictionNode n2){
-        if(n1.getFacetRestriction().getFacet().getClass() == n2.getFacetRestriction().getFacet().getClass())
+        if(n1.getFacetRestriction().getFacet().getClass() == n2.getFacetRestriction().getFacet().getClass())//TODO: print this:
             return 0;
         return -1; 
     }
 
     private int compareDataRangeNode(DataRangeNode n1, DataRangeNode n2){
-        if(n1.getDataRange().getClass() == n2.getDataRange().getClass())
+        if(n1.getDataRange().getClass() == n2.getDataRange().getClass())//TODO: print this!
             return 0;
         return -1; 
     }
