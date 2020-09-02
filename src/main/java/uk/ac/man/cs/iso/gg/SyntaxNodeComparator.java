@@ -86,42 +86,70 @@ public class SyntaxNodeComparator implements Comparator<SyntaxNode> {
     }
 
     private int comparePropertyNode(PropertyNode n1, PropertyNode n2){ 
-        if(n1.getPropertyExpression().getClass() == n2.getPropertyExpression().getClass())
+        //this should work
+        if(n1.getPropertyExpression().getClass() == n2.getPropertyExpression().getClass()){
             return 0;
+        }
         return -1;
-    }
-
+    } 
 
     private int compareLiteralNode(LiteralNode n1, LiteralNode n2){ 
-        if(n1.getLiteral().getClass() == n2.getLiteral().getClass())//TODO: print this
+        OWLLiteral l1 = n1.getLiteral();
+        OWLLiteral l2 = n2.getLiteral();
+        boolean same = false;
+        if(l1.isBoolean() && l2.isBoolean())
+            same = true;
+        if(l1.isInteger() && l2.isInteger())
+            same = true;
+        if(l1.isDouble() && l2.isDouble())
+            same = true;
+        if(l1.isFloat() && l2.isFloat())
+            same = true;
+        if(l1.isLiteral() && l2.isLiteral())
+            same = true;
+        if(l1.isRDFPlainLiteral() && l2.isRDFPlainLiteral())
+            same = true;
+
+        //NB: this is to coarse grained
+        //integers are not put into 'integerImplemention' butinto 'noCompression'
+        //for reasons I don't know 
+        //if(n1.getLiteral().getClass() == n2.getLiteral().getClass()){
+        if(same){
             return 0;
+        }
         return -1;
     }
 
     private int compareIndividualNodes(IndividualNode n1, IndividualNode n2){
-        if(n1.getIndividual().getClass() == n2.getIndividual().getClass())
-            return 0;
-        return -1;
+        return 0;//all individuals (named & anonymous) are matached
+        //if(n1.getIndividual().getClass() == n2.getIndividual().getClass())
+        //    return 0;
+        //return -1;
     }
 
     private int compareFacetRestrictionNode(FacetRestrictionNode n1, FacetRestrictionNode n2){
-        if(n1.getFacetRestriction().getFacet().getClass() == n2.getFacetRestriction().getFacet().getClass())//TODO: print this:
+        //we don't care about the type of facet
+        if(n1.getFacetRestriction().getFacet().getClass() == n2.getFacetRestriction().getFacet().getClass()){//should always return true
             return 0;
+        }
         return -1; 
     }
 
     private int compareDataRangeNode(DataRangeNode n1, DataRangeNode n2){
-        if(n1.getDataRange().getClass() == n2.getDataRange().getClass())//TODO: print this!
+        //seems to work (because there are different imp classes for "intersection, union, etc."
+        if(n1.getDataRange().getClass() == n2.getDataRange().getClass()){//TODO: print this!
             return 0;
+        }
         return -1; 
     }
 
     private int compareAxiomNodes(AxiomNode n1, AxiomNode n2){
         //TODO: list everything for fine grained comparison
         //
-        //as for now: cheat
-        if(n1.getAxiom().getClass() == n2.getAxiom().getClass())
+        //as for now: cheat (seems to work)
+        if(n1.getAxiom().getClass() == n2.getAxiom().getClass()){
             return 0;
+        }
         return -1;
     }
 

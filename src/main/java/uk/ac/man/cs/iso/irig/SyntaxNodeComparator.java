@@ -97,9 +97,9 @@ public class SyntaxNodeComparator implements Comparator<SyntaxNode> {
     }
 
     private int compareIndividualNodes(IndividualNode n1, IndividualNode n2){
-        if(n1.getIndividual().getClass() == n2.getIndividual().getClass())
+        //if(n1.getIndividual().getClass() == n2.getIndividual().getClass())
             return 0;
-        return -1;
+        //return -1;
     }
 
     private int compareFacetRestrictionNode(FacetRestrictionNode n1, FacetRestrictionNode n2){
