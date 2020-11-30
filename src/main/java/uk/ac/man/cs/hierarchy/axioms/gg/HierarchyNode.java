@@ -48,7 +48,7 @@ import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 public class HierarchyNode {
     private int ID;
     private SyntaxTree tree;//tree corresponding to the axiom
-    private SyntaxTree internalTree; //tree without 'original' leafs
+    //private SyntaxTree internalTree; //tree without 'original' leafs
     private Set<OWLAxiom> instances;
     private Set<HierarchyNode> children;
     private Set<HierarchyNode> parents;
@@ -58,7 +58,7 @@ public class HierarchyNode {
     public HierarchyNode(SyntaxTree t, SyntaxTree i, int id){
         this.ID = id;
         this.tree = t;
-        this.internalTree = i;//TODO: we won't need this if we use our isomorphisms properly
+        //this.internalTree = i;//TODO: we won't need this if we use our isomorphisms properly
         this.instances = new HashSet<>();
 
         this.instances.add(((AxiomNode) this.tree.getRoot()).getAxiom());
@@ -76,9 +76,9 @@ public class HierarchyNode {
         return GroundGeneralisation.exists(this.tree, t);
     }
 
-    public SyntaxTree getInternalTree(){
-        return this.internalTree;
-    }
+    //public SyntaxTree getInternalTree(){
+    //    return this.internalTree;
+    //}
 
     public Set<OWLAxiom> getInstances(){
         return this.instances;
@@ -156,7 +156,9 @@ public class HierarchyNode {
         //System.out.println("Start");
         //return Subisomorphism.exists(this.tree, n.getInternalTree());
         //boolean res = Subisomorphism.exists(this.tree, n.getInternalTree());
-        boolean res = Subisomorphism.exists(this.internalTree, n.getInternalTree());//check whether this is correct - should be though
+        //boolean res = Subisomorphism.exists(this.internalTree, n.getInternalTree());//check whether this is correct - should be though
+        //boolean res = Subisomorphism.exists(this.tree, n.getTree());//check whether this is correct - should be though
+        boolean res = Subisomorphism.exists(n.getTree(), this.tree); //(checks whether second argument is an induced subgraph of the first argument)
         //System.out.println("Stop");
         return res;
         //return Subisomorphism.exists(this.internalTree, n.getInternalTree());

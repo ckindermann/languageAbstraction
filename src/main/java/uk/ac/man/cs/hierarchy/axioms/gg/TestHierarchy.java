@@ -102,6 +102,7 @@ public class TestHierarchy {
 
         //print stuff
         for(HierarchyNode n : hImp.getNodes()){
+            System.out.println("Node " + n.getID());
             OWLAxiom a = ((AxiomNode) n.getTree().getRoot()).getAxiom();
             for(HierarchyNode c : n.getChildren()){
                 OWLAxiom b = ((AxiomNode) c.getTree().getRoot()).getAxiom(); 

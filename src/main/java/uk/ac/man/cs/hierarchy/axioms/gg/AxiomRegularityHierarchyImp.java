@@ -48,7 +48,7 @@ import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 public class AxiomRegularityHierarchyImp {
 
 
-    private Map<SyntaxTree,HierarchyNode> instance2node;
+    //private Map<SyntaxTree,HierarchyNode> instance2node;
     private Map<HierarchyNode,Set<SyntaxTree>> node2instances;//regularity2instances
     private TreeMap<Integer,Set<HierarchyNode>> specificity2node;//specificity2regulartiy
 
@@ -70,10 +70,12 @@ public class AxiomRegularityHierarchyImp {
 
     private void initialise(Set<SyntaxTree> trees){ 
         this.nextID = 1;
+
         this.id2node = new HashMap<>();
         this.node2id = new HashMap<>();
         this.nodes = new HashSet<>();
-        this.instance2node = new HashMap<>();
+        //this.instance2node = new HashMap<>();//every regularity should be a node
+
         //stratify syntax trees by size 
         TreeMap<Integer,Set<SyntaxTree>> specificity2tree = new TreeMap();
         for(SyntaxTree t : trees){
@@ -96,7 +98,7 @@ public class AxiomRegularityHierarchyImp {
                 boolean found = false;
                 for(HierarchyNode n : reg){
                     if(n.represents(t)){
-                        this.instance2node.put(t,n);
+                        //this.instance2node.put(t,n);
                         this.node2instances.get(n).add(t);
                         n.addInstance(((AxiomNode) t.getRoot()).getAxiom());
                         found = true;
