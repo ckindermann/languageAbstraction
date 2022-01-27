@@ -54,10 +54,22 @@ public class TestHierarchy {
     public static void main(String[] args) throws IOException , Exception{
 
         String ontFilePath = args[0]; 
-        String outputPath = args[1]; 
+        String abstraction = args[1];  // internal or gg
+        String outputPath = args[2]; 
 
-        //TODO: I don't think I want to work with internal trees
-        //ground generalisation does the trick
+        //get ontFileName
+        String ontologyName = Paths.get(ontFilePath).getFileName().toString();
+        //create folder
+        outputPath = outputPath + "/" + ontologyName;
+        IOHelper.createFolder(outputPath);
+
+        //quick hack to convert ontology from TTL to owlxml
+        //log.info("\tChecking Ontology "); 
+        //OntologyChecker checker = new OntologyChecker(ontFilePath, outputPath);
+        //checker.isLoadable(new File(ontFilePath));
+        //checker.isConvertible();
+        //log.info("\tDone Checking"); 
+
 
         //Load ontology
         File ontFile = new File(ontFilePath);
@@ -65,7 +77,24 @@ public class TestHierarchy {
         OntologyLoader ontLoader = new OntologyLoader(ontFile, true);
         OWLOntology ont = ontLoader.getOntology(); 
 
-        SyntaxTreeBuilder treeBuilder = new SyntaxTreeBuilder();
+
+        //SyntaxTreeBuilder treeBuilder = new SyntaxTreeBuilder();
+        //ConstructorPreservanceBuilder treeBuilder = new ConstructorPreservanceBuilder(); 
+
+        TreeBuilder treeBuilder;
+
+        switch (abstraction) {
+            case "gg":
+            treeBuilder = new SyntaxTreeBuilder();
+            break;
+
+            case "internal":
+            treeBuilder = new ConstructorPreservanceBuilder(); 
+            break;
+
+            default:
+            treeBuilder = new SyntaxTreeBuilder();
+        }
 
         //Get Class Axioms
         Set<OWLAxiom> toTest = new HashSet<>();
@@ -84,12 +113,11 @@ public class TestHierarchy {
         MyTimer timer = new MyTimer();
 
         //get regularities over axioms
-        timer.go();
-        GroundGeneralisationMiner gg = new GroundGeneralisationMiner(ont);
-        timer.stop("GG");
-
-        Map<SyntaxTree,Set<OWLAxiom>> reg2instances = gg.getRegularity2instance();
-        System.out.println("GG" + reg2instances.size());
+        //timer.go();
+        //GroundGeneralisationMiner gg = new GroundGeneralisationMiner(ont);
+        //timer.stop("GG"); 
+        //Map<SyntaxTree,Set<OWLAxiom>> reg2instances = gg.getRegularity2instance();
+        //System.out.println("GG" + reg2instances.size());
 
         //Set<SyntaxTree> regularities = reg2instances.keySet(); 
         //
@@ -97,18 +125,62 @@ public class TestHierarchy {
         AxiomRegularityHierarchyImp hImp = new AxiomRegularityHierarchyImp(syntrees); 
         timer.stop("impHG");
 
-        System.out.println("HGimp" + hImp.getNodes().size());
-        System.out.println("roots" + hImp.getRoots().size()); 
+        System.out.println("nodes: " + hImp.getNodes().size());
+        System.out.println("roots: " + hImp.getRoots().size()); 
+
+        Set<HierarchyNode> nodes = hImp.getNodes();
+        Set<HierarchyNode> roots = hImp.getRoots();
+
+        int maxDepth=0;
+        int maxBranching=0;
+        for(HierarchyNode n : nodes){
+            if(n.getDepth() > maxDepth){
+                maxDepth = n.getDepth();
+            }
+            if(n.getChildren().size() > maxBranching){
+                maxBranching = n.getChildren().size();
+            } 
+        }
+
+        System.out.println("Max Depth: " + maxDepth); 
+        System.out.println("Max Branching: " + maxBranching); 
+
+        Set<HierarchyNode> leafs = new HashSet();
+        for(HierarchyNode n : nodes){
+            if(n.getChildren().isEmpty()){
+                leafs.add(n);
+            }
+        }
+
+
+        double branchingFactor =  ((double) (nodes.size() - roots.size())) / (nodes.size() - leafs.size());
+        System.out.println("Average Branching: " + branchingFactor); 
+
+        //list of nodes + number of instances
+        for(HierarchyNode n : nodes){
+            System.out.println(n.getID() + " " + n.getInstances().size()); 
+        }
+
+
+        hImp.writeGraphWithInstances(outputPath);
 
         //print stuff
-        for(HierarchyNode n : hImp.getNodes()){
-            OWLAxiom a = ((AxiomNode) n.getTree().getRoot()).getAxiom();
-            System.out.println("Node " + n.getID() + " " + a.toString());
-            for(HierarchyNode c : n.getChildren()){
-                OWLAxiom b = ((AxiomNode) c.getTree().getRoot()).getAxiom(); 
-                System.out.println(a.toString() + " -> " + b.toString());
-            } 
-            System.out.println("----");
+        //for(HierarchyNode n : hImp.getNodes()){
+        //    OWLAxiom a = ((AxiomNode) n.getTree().getRoot()).getAxiom();
+        //    System.out.println("Node " + n.getID() + " " + a.toString());
+        //    for(HierarchyNode c : n.getChildren()){
+        //        OWLAxiom b = ((AxiomNode) c.getTree().getRoot()).getAxiom(); 
+        //        System.out.println(a.toString() + " -> " + b.toString());
+        //    } 
+        //    System.out.println("----");
+        //}
+
+        //write nodes as ontologies
+        for(HierarchyNode n : nodes){
+            int ID = n.getID();
+            Set<OWLAxiom> instances = n.getInstances();
+
+            OntologySaver.saveAxioms(instances, outputPath + "/ontologies/" + ID);
         }
     }
 }

@@ -39,7 +39,7 @@ import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 /**
  * Class Expression Visitor 
  */
-public class ConstructorPreservanceBuilder 
+public class ConstructorPreservanceBuilder extends TreeBuilder
     implements OWLAxiomVisitor,
                OWLClassExpressionVisitor,
                OWLPropertyExpressionVisitor,
