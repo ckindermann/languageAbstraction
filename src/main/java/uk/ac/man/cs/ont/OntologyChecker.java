@@ -64,7 +64,7 @@ public class OntologyChecker {
         this.loadable = isLoadable(this.ontologyFile);
         if(this.loadable){
             this.classifiable = isClassifiable(this.ontology); 
-            this.convertible = isConvertible(this.ontology);
+            //this.convertible = isConvertible(this.ontology);
         }
     }
 
@@ -88,14 +88,14 @@ public class OntologyChecker {
         return true; 
     }
 
-    public boolean isConvertible(OWLOntology o){ 
+    public boolean isConvertible(){ 
         IOHelper.createFolder(outputPath+"/RDFXML"); 
         String file = this.outputPath + "/RDFXML/" + this.ontologyFile.getName();
         File output = new File(file);
         IRI documentIRI2 = IRI.create(output.toURI());
 
         try{
-            manager.saveOntology(ontology, new RDFXMLDocumentFormat(), documentIRI2); 
+            manager.saveOntology(this.ontology, new RDFXMLDocumentFormat(), documentIRI2); 
         } catch (Exception e){
             return false; 
         }
