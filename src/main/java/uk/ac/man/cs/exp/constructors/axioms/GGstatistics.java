@@ -45,9 +45,9 @@ import org.jgrapht.traverse.*;
 /**
  * A class to demonstrate the functionality of the library.
  */
-public class AxiomGGSize {
+public class GGstatistics {
 
-    private static final Logger log = Logger.getLogger(String.valueOf(AxiomGGSize.class));
+    private static final Logger log = Logger.getLogger(String.valueOf(GGstatistics.class));
 
     public static void main(String[] args) throws IOException , Exception {
 
@@ -107,6 +107,7 @@ public class AxiomGGSize {
         String header = "Regularity ID," +
                         "Number Of Instances," +
                         "Size of Regularity Structure," +
+                        "Depth" +
                         "Number of Leafs," +
                         "Number of Non-Leafs," +
                         "Max Branching, "+ 
