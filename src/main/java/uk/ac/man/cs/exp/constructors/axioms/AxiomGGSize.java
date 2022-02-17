@@ -103,13 +103,16 @@ public class AxiomGGSize {
     }
 
     public static void writeStatistics(Set<HierarchyNode> nodes, String output) throws Exception {
-        //regularity size (number of instances)
-        //regularity structure size (number of nodes)
-        //number of leafs
-        //number of non-leafs
-        //max branch
-        //average branching
         String basePath = output + "/statistics";
+        String header = "Regularity ID," +
+                        "Number Of Instances," +
+                        "Size of Regularity Structure," +
+                        "Number of Leafs," +
+                        "Number of Non-Leafs," +
+                        "Max Branching, "+ 
+                        "Average Branching";
+
+        IOHelper.writeAppend("", basePath); 
         for(HierarchyNode node : nodes){
             SyntaxTree synTree = node.getTree();
             int regularitySize = node.getInstances().size();
@@ -130,8 +133,7 @@ public class AxiomGGSize {
                 averageBranching;
 
 
-            IOHelper.writeAppend(sum, basePath);
-
+            IOHelper.writeAppend(sum, basePath); 
         } 
     }
 
