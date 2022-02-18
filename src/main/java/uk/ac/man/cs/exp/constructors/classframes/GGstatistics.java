@@ -84,10 +84,8 @@ public class GGstatistics {
         SetRegularityHierarchy hierarchy = new SetRegularityHierarchy(reg2inst); 
         hierarchy.writeGraphWithInstances(outputPath + "/" + ontologyName);
 
-        writeInstances(reg2inst, frameMiner, hierarchy,outputPath + "/" + ontologyName);
-
-        //writeInstances(nodes, outputPath + "/" + ontologyName);
-        //writeStatistics(nodes, outputPath + "/" + ontologyName);
+        writeInstances(reg2inst, frameMiner, hierarchy,outputPath + "/" + ontologyName); 
+        writeStatistics(hierarchy, outputPath + "/" + ontologyName);
 
     }
 
@@ -124,30 +122,34 @@ public class GGstatistics {
         }
     }
 
-    /*
-    public static void writeStatistics(Set<HierarchyNode> nodes, String output) throws Exception {
+    public static void writeStatistics(
+            SetRegularityHierarchy hierarchy, 
+            String output) throws Exception {
+
         String basePath = output + "/statistics";
+
         String header = "Regularity ID," +
                         "Number Of Instances," +
                         "Size of Regularity Structure," +
-                        "Depth" +
+                        "Depth," +
                         "Number of Leafs," +
                         "Number of Non-Leafs," +
                         "Max Branching, "+ 
                         "Average Branching";
 
-        IOHelper.writeAppend("", basePath); 
-        for(HierarchyNode node : nodes){
-            SyntaxTree synTree = node.getTree();
-            int regularitySize = node.getInstances().size();
-            int structureSize = synTree.getTree().vertexSet().size();
-            int depth = getDepth(synTree);
-            int leafs = getLeafs(synTree);
-            int nonLeafs = structureSize - leafs;
-            int maxBranching = getMaxmialBranchingFactor(synTree);
-            double averageBranching = ((double) structureSize  - 1) / nonLeafs;
+        IOHelper.writeAppend(header, basePath); 
 
-            String sum = node.getID() + ":" +
+        for(HierarchyNode node : hierarchy.getNodes()){ 
+            int regularitySize = node.getInstances().size();
+            int structureSize = getStructureSize(node); 
+            int depth = getDepth(node);
+            int leafs = getLeafs(node);
+            int nonLeafs = structureSize - leafs;
+            int maxBranching = getMaxmialBranchingFactor(node);
+            int roots = getRoots(node);
+            double averageBranching = ((double) structureSize  - roots) / nonLeafs;
+
+            String sum = node.getID() + "," +
                 regularitySize + "," +
                 structureSize + "," +
                 depth + "," +
@@ -158,8 +160,44 @@ public class GGstatistics {
 
 
             IOHelper.writeAppend(sum, basePath); 
-        } 
+        }
     }
+
+    public static int getRoots(HierarchyNode n) {
+        int roots = 0;
+        Map<SyntaxTree,Integer> trees = n.getFrame().getTrees();
+        for (int i : trees.values()){
+            roots += i;
+        } 
+        return roots; 
+    }
+
+    public static int getStructureSize(HierarchyNode n){
+        Map<SyntaxTree,Integer> trees = n.getFrame().getTrees();
+
+        int structureSize = 0;
+        for(Map.Entry<SyntaxTree, Integer> entry : trees.entrySet()){
+
+            SyntaxTree t = entry.getKey();
+            int weight = entry.getValue();
+
+            structureSize += (t.getTree().vertexSet().size() * weight); 
+        }
+        return structureSize; 
+    }
+
+    public static int getDepth(HierarchyNode n){
+        int maxDepth = 0;
+        Map<SyntaxTree,Integer> trees = n.getFrame().getTrees();
+        for (SyntaxTree t : trees.keySet()){
+            int depth = getDepth(t);
+            if(depth > maxDepth){
+                maxDepth = depth;
+            }
+        } 
+        return maxDepth; 
+    }
+
 
     public static int getDepth(SyntaxTree t){
         SimpleDirectedGraph<SyntaxNode,DefaultEdge> tree = t.getTree();
@@ -185,6 +223,21 @@ public class GGstatistics {
         return depth;
     }
 
+    public static int getLeafs(HierarchyNode n){ 
+        Map<SyntaxTree,Integer> trees = n.getFrame().getTrees();
+
+        int leafs = 0;
+        for(Map.Entry<SyntaxTree, Integer> entry : trees.entrySet()){
+
+            SyntaxTree t = entry.getKey();
+            int weight = entry.getValue();
+
+            leafs += (getLeafs(t) * weight); 
+        }
+        return leafs; 
+
+    }
+
     public static int getLeafs(SyntaxTree t){
         SimpleDirectedGraph<SyntaxNode,DefaultEdge> tree = t.getTree();
         int leafs = 0;
@@ -195,7 +248,20 @@ public class GGstatistics {
         } 
         return leafs;
     }
-    //public static int getNonLeafs(SyntaxTree t){ return 0; }
+
+    public static int getMaxmialBranchingFactor(HierarchyNode n){
+        int maxBranching = 0;
+        Map<SyntaxTree,Integer> trees = n.getFrame().getTrees();
+        for (SyntaxTree t : trees.keySet()){
+            int branching = getMaxmialBranchingFactor(t);
+            if(branching > maxBranching){
+                maxBranching = branching;
+            }
+        } 
+        return maxBranching; 
+
+    }
+
     public static int getMaxmialBranchingFactor(SyntaxTree t){
         SimpleDirectedGraph<SyntaxNode,DefaultEdge> tree = t.getTree();
         int maxBranching = 0;
@@ -207,6 +273,5 @@ public class GGstatistics {
         } 
         return maxBranching; 
     } 
-    */
 
 }
