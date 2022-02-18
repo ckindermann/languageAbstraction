@@ -134,8 +134,11 @@ public class GGstatistics {
                         "Depth," +
                         "Number of Leafs," +
                         "Number of Non-Leafs," +
-                        "Max Branching, "+ 
-                        "Average Branching";
+                        "Max Branching, " + 
+                        "Average Branching," +
+                        "Number of Axioms," +
+                        "Max Axiom Repetition ," +
+                        "Number of Non-Isomorphic Axioms";
 
         IOHelper.writeAppend(header, basePath); 
 
@@ -148,6 +151,9 @@ public class GGstatistics {
             int maxBranching = getMaxmialBranchingFactor(node);
             int roots = getRoots(node);
             double averageBranching = ((double) structureSize  - roots) / nonLeafs;
+            int numberOfAxioms = roots; //each axiom starts in a root node
+            int maxAxiomRepetition = getMaxAxiomRepetition(node);
+            int nonIsomorphicAxioms = getNonIsomorphicAxioms(node);
 
             String sum = node.getID() + "," +
                 regularitySize + "," +
@@ -156,11 +162,33 @@ public class GGstatistics {
                 leafs + "," +
                 nonLeafs + "," +
                 maxBranching + "," +
-                averageBranching;
-
+                averageBranching + "," +
+                maxAxiomRepetition + "," +
+                nonIsomorphicAxioms; 
 
             IOHelper.writeAppend(sum, basePath); 
         }
+    }
+
+    public static int getNonIsomorphicAxioms(HierarchyNode n) {
+        Map<SyntaxTree,Integer> trees = n.getFrame().getTrees(); 
+        return trees.size();
+    }
+
+    public static int getMaxAxiomRepetition(HierarchyNode n) {
+        Map<SyntaxTree,Integer> trees = n.getFrame().getTrees();
+
+        int maxRepetition = 0;
+        for(Map.Entry<SyntaxTree, Integer> entry : trees.entrySet()){
+
+            SyntaxTree t = entry.getKey();
+            int weight = entry.getValue();
+
+            if(weight > maxRepetition) {
+                maxRepetition = weight;
+            } 
+        }
+        return maxRepetition;
     }
 
     public static int getRoots(HierarchyNode n) {
