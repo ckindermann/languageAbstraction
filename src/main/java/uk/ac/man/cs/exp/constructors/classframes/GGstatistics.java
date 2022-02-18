@@ -134,10 +134,10 @@ public class GGstatistics {
                         "Depth," +
                         "Number of Leafs," +
                         "Number of Non-Leafs," +
-                        "Max Branching, " + 
+                        "Max Branching," + 
                         "Average Branching," +
                         "Number of Axioms," +
-                        "Max Axiom Repetition ," +
+                        "Max Axiom Repetition," +
                         "Number of Non-Isomorphic Axioms";
 
         IOHelper.writeAppend(header, basePath); 
@@ -163,6 +163,7 @@ public class GGstatistics {
                 nonLeafs + "," +
                 maxBranching + "," +
                 averageBranching + "," +
+                numberOfAxioms + "," +
                 maxAxiomRepetition + "," +
                 nonIsomorphicAxioms; 
 
