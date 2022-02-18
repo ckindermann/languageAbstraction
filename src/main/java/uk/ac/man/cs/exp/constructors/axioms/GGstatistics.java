@@ -113,7 +113,7 @@ public class GGstatistics {
                         "Max Branching, "+ 
                         "Average Branching";
 
-        IOHelper.writeAppend("", basePath); 
+        IOHelper.writeAppend(header, basePath); 
         for(HierarchyNode node : nodes){
             SyntaxTree synTree = node.getTree();
             int regularitySize = node.getInstances().size();
@@ -124,7 +124,7 @@ public class GGstatistics {
             int maxBranching = getMaxmialBranchingFactor(synTree);
             double averageBranching = ((double) structureSize  - 1) / nonLeafs;
 
-            String sum = node.getID() + ":" +
+            String sum = node.getID() + "," +
                 regularitySize + "," +
                 structureSize + "," +
                 depth + "," +
