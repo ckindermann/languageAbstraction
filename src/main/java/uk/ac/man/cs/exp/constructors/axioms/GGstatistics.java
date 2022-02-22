@@ -90,6 +90,7 @@ public class GGstatistics {
 
         writeInstances(nodes, outputPath + "/" + ontologyName);
         writeStatistics(nodes, outputPath + "/" + ontologyName);
+        writeConstructorUsage(nodes, outputPath + "/" + ontologyName);
 
     }
 
@@ -100,6 +101,69 @@ public class GGstatistics {
             Set<OWLAxiom> instances = node.getInstances();
             OntologySaver.saveAxioms(instances, basePath + "/" + node.getID() + ".owl"); 
         }
+    }
+
+    public static void writeConstructorUsage(Set<HierarchyNode> nodes, String output) throws Exception {
+        String basePath = output + "/constructorUsage";
+        IOHelper.createFolder(basePath);
+
+        for(HierarchyNode n : nodes){
+            HashMap<String,Integer> constructorUsage = getConstructorUsage(n); 
+            IOHelper.writeAppend(constructorUsage.toString(), basePath + "/" + n.getID());
+        } 
+    }
+
+
+    public static HashMap<String,Integer> getConstructorUsage(HierarchyNode node) throws Exception {
+        //Map from Constructor Type to int? 
+        HashMap<String, Integer> constructor2occurrence = new HashMap<String, Integer>();
+
+        SyntaxTree t = node.getTree();
+
+        SimpleDirectedGraph<SyntaxNode,DefaultEdge> tree = t.getTree();
+
+        //breadth first search 
+        SyntaxNode root = t.getRoot();
+        Set<SyntaxNode> level = new HashSet<>(); 
+        level.add(root);
+        Set<SyntaxNode> nextLevel = new HashSet<>();
+
+        while(!level.isEmpty()){
+            for(SyntaxNode n : level){ 
+                //if n is not a leaf node
+                if(tree.outgoingEdgesOf(n).size() > 0){
+                    if(n instanceof AxiomNode){
+                        OWLAxiom axiom = (OWLAxiom) n.getObject();
+                        String type = axiom.getAxiomType().getName();
+                        constructor2occurrence.put(type, constructor2occurrence.getOrDefault(type, 0) + 1); 
+                    }
+                    if(n instanceof ClassNode){
+                        OWLClassExpression expression = (OWLClassExpression) n.getObject();
+                        String type = expression.getClassExpressionType().getName();
+                        constructor2occurrence.put(type, constructor2occurrence.getOrDefault(type, 0) + 1);
+                    }
+                    if(n instanceof PropertyNode){
+                        //-necessarily inverse (because it's not a leaf)
+                        String type = "ObjectInverseOf";
+                        constructor2occurrence.put(type, constructor2occurrence.getOrDefault(type, 0) + 1);
+                    }
+                    if(n instanceof DataRangeNode){
+                        OWLDataRange range = (OWLDataRange) n.getObject();
+                        String type = range.getDataRangeType().getName();
+                        constructor2occurrence.put(type, constructor2occurrence.getOrDefault(type, 0) + 1);
+                    }
+                }
+                //construct next level
+                Set<DefaultEdge> edges = tree.outgoingEdgesOf(n); 
+                for(DefaultEdge e : edges){
+                    nextLevel.add(tree.getEdgeTarget(e)); 
+                }
+            }
+            level.clear();
+            level.addAll(nextLevel);
+            nextLevel.clear();
+        } 
+        return constructor2occurrence;
     }
 
     public static void writeStatistics(Set<HierarchyNode> nodes, String output) throws Exception {
