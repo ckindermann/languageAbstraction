@@ -74,13 +74,13 @@ public class GroundGeneralisationMiner {
         this.axiom2regularity = new HashMap();
         this.regularity2instances = new HashMap();
 
-        //System.out.println("Work to do: " + this.specificity2tree.size());
+        System.out.println("Work to do: " + this.specificity2tree.size());
         int i = 1;
 
         for(Map.Entry<Integer,Set<SyntaxTree>> entry : this.specificity2tree.entrySet()){
             int specificity = entry.getKey();//get stratum identifier
             Set<SyntaxTree> toPartition = entry.getValue();//get stratum
-            //System.out.println("Working on: " + i++ + " with " + toPartition.size());
+            System.out.println("Working on: " + i++ + " with " + toPartition.size());
 
             this.specificity2regularity.putIfAbsent(specificity,new HashSet<>());
             Set<SyntaxTree> regs = this.specificity2regularity.get(specificity);
@@ -99,6 +99,7 @@ public class GroundGeneralisationMiner {
                 if(!found){
                     this.regularity2instances.put(t,new HashSet<>());
                     this.regularity2instances.get(t).add(a);
+                    this.axiom2regularity.put(a,t);
                     regs.add(t); 
                 }
             }
