@@ -87,11 +87,14 @@ public class GGstatistics {
         hImp.writeGraphWithInstances(outputPath + "/" + ontologyName);
 
         Set<HierarchyNode> nodes = hImp.getNodes();
-
         writeInstances(nodes, outputPath + "/" + ontologyName);
-        writeStatistics(nodes, outputPath + "/" + ontologyName);
-        writeConstructorUsage(nodes, outputPath + "/" + ontologyName);
-        writeHierarchyStatistics(hImp.getRoots(), outputPath + "/" + ontologyName);
+
+        String statisticsPath = outputPath + "/" + ontologyName + "/statistics";
+        IOHelper.createFolder(statisticsPath);
+
+        writeRegularityStatistics(nodes, statisticsPath);
+        writeConstructorUsage(nodes, statisticsPath);
+        writeHierarchyStatistics(hImp.getRoots(), statisticsPath);
     }
 
     public static void writeHierarchyStatistics(Set<HierarchyNode> roots, String output) throws Exception {
@@ -219,8 +222,8 @@ public class GGstatistics {
         return constructor2occurrence;
     }
 
-    public static void writeStatistics(Set<HierarchyNode> nodes, String output) throws Exception {
-        String basePath = output + "/statistics";
+    public static void writeRegularityStatistics(Set<HierarchyNode> nodes, String output) throws Exception {
+        String basePath = output + "/regularityStatistics";
         String header = "Regularity ID," +
                         "Number Of Instances," +
                         "Size of Regularity Structure," +
