@@ -7,6 +7,8 @@ import uk.ac.man.cs.structure.nodes.*;//has syntaxTrees
 import uk.ac.man.cs.iso.gg.*;
 import uk.ac.man.cs.subIso.*;
 
+import uk.ac.man.cs.parser.*;
+
 //import uk.ac.man.cs.pat.*;
 //import uk.ac.man.cs.profile.*;
 //import uk.ac.man.cs.iso.*;
@@ -52,6 +54,9 @@ public class HierarchyNode {
     private Set<OWLAxiom> instances;
     private Set<HierarchyNode> children;
     private Set<HierarchyNode> parents;
+    private int depth;
+
+    //private ConstructorPreservanceBuilder builder;
 
     public Set<HierarchyNode> visitedDuringInsertion;
 
@@ -66,6 +71,7 @@ public class HierarchyNode {
         this.parents = new HashSet<>();
 
         this.visitedDuringInsertion = new HashSet<>(); 
+        //this.builder = new ConstructorPreservanceBuilder(); 
     }
 
     public SyntaxTree getTree(){
@@ -74,6 +80,16 @@ public class HierarchyNode {
 
     public boolean represents(SyntaxTree t){ 
         return GroundGeneralisation.exists(this.tree, t);
+        //SyntaxTree internal = builder.build(((AxiomNode) t.getRoot()).getAxiom()); 
+        //return GroundGeneralisation.exists(this.internalTree, internal);
+    }
+
+    public int getDepth(){
+        return this.depth;
+    }
+
+    public void setDepth(int d){
+        this.depth = d;
     }
 
     public SyntaxTree getInternalTree(){
@@ -86,6 +102,10 @@ public class HierarchyNode {
 
     public Set<HierarchyNode> getChildren(){
         return this.children;
+    }
+
+    public Set<HierarchyNode> getParents(){
+        return this.parents;
     }
 
     public void setID(int id){
@@ -166,5 +186,6 @@ public class HierarchyNode {
 
     public boolean sameAs(HierarchyNode n){
         return GroundGeneralisation.exists(this.tree, n.getTree());
+        //return GroundGeneralisation.exists(this.internalTree, n.getInternalTree());
     }
 }
