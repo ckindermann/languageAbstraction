@@ -66,6 +66,7 @@ public class SetRegularityHierarchy {
         Map<ClassFrameGroundGeneralisation,Set<ClassFrameGroundGeneralisation>> reg2instH = frameMiner.getRegularity2instance();
 
         //conversion for instances
+        //(this just takes ClassFrames and converts them to their associated LHS entities)
         Map<ClassFrameGroundGeneralisation,Set<OWLClassExpression>> reg2inst = new HashMap<>();
         for (Map.Entry<ClassFrameGroundGeneralisation, Set<ClassFrameGroundGeneralisation>>
                 entry : reg2instH.entrySet()) {
@@ -147,6 +148,14 @@ public class SetRegularityHierarchy {
         } 
     } 
 
+    public Set<HierarchyNode> getNodes(){
+        return this.nodes;
+    }
+
+    public Set<HierarchyNode> getRoots(){
+        return this.roots;
+    }
+
     public void writeGraphWithInstances(String output){
         IOHelper.writeAppend("digraph gname {", output + "/graph");
 
@@ -173,5 +182,11 @@ public class SetRegularityHierarchy {
         for(HierarchyNode r : this.roots){
             IOHelper.writeAppend("Root " + r.getID(), output + "/roots"); 
         }
+    }
+
+    public int getClassFrameID(ClassFrameGroundGeneralisation f){
+        HierarchyNode node = this.frame2node.get(f);
+        int id = this.node2id.get(node); 
+        return id;
     }
 }
