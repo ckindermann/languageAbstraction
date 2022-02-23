@@ -112,5 +112,23 @@ public class ClassFrame {
     public void addDisjointClasses(Set<OWLDisjointClassesAxiom> c){
         this.disjointClasses.addAll(c);
     } 
+
+    public String toString(){
+        String res = "Superclasses \n";
+        for(OWLSubClassOfAxiom a : this.superclasses){
+            res += "\t" + a.toString() + "\n";
+        }
+        for(OWLEquivalentClassesAxiom a : this.equivalences){
+            res += "\t" + a.toString() + "\n";
+        }
+        for(OWLDisjointUnionAxiom a : this.disjointUnion){
+            res += "\t" + a.toString() + "\n";
+        }
+        for(OWLDisjointClassesAxiom a : this.disjointClasses){
+            res += "\t" + a.toString() + "\n";
+        }
+
+        return res; 
+    }
 }
 
