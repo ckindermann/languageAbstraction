@@ -91,7 +91,59 @@ public class GGstatistics {
         writeInstances(nodes, outputPath + "/" + ontologyName);
         writeStatistics(nodes, outputPath + "/" + ontologyName);
         writeConstructorUsage(nodes, outputPath + "/" + ontologyName);
+        writeHierarchyStatistics(hImp.getRoots(), outputPath + "/" + ontologyName);
+    }
 
+    public static void writeHierarchyStatistics(Set<HierarchyNode> roots, String output) throws Exception {
+        String basePath = output + "/hierarchyStatistics";
+        //IOHelper.createFolder(basePath); 
+
+        int numberOfRoots = roots.size();
+        int numberOfNodes = 0;
+        int numberOfLeafs = 0;
+        int depth = 0; //depth of the hierarchy (is the number of levels)
+        int maxBranching = 0; //branching (max + average)
+        double averageBranching = 0.0; //number of nonroots / number of non-leafs
+        HashMap<Integer,Integer> level2nodes = new HashMap<>();
+        //number of nodes per level (number of axioms per level/% of ontology covered per level)
+
+        //2. breadth first search starting at root
+        Set<HierarchyNode> level = new HashSet<>(); 
+        level.addAll(roots);
+        Set<HierarchyNode> nextLevel = new HashSet<>();
+
+        while(!level.isEmpty()){
+            depth++;
+            level2nodes.put(depth, level.size());
+            for(HierarchyNode n : level){ 
+                numberOfNodes++; 
+                int numberOfChildren = n.getChildren().size();
+
+                if(numberOfChildren == 0){
+                    numberOfLeafs++;
+                }
+                if(numberOfChildren > maxBranching){
+                    maxBranching = numberOfChildren;
+                }
+
+                for(HierarchyNode c : n.getChildren()){
+                    nextLevel.add(c); 
+                }
+            }
+            level.clear();
+            level.addAll(nextLevel);
+            nextLevel.clear();
+        }
+
+        averageBranching = (numberOfNodes - numberOfRoots) / (numberOfNodes - numberOfLeafs);
+
+        IOHelper.writeAppend("NumberOfRoots,NumberOfNodes,NumberOfLeafs,Depth,MaxBranching,AverageBranching",basePath);
+        IOHelper.writeAppend(numberOfRoots + "," +
+                             numberOfNodes + "," +
+                             numberOfLeafs + "," +
+                             depth + "," +
+                             maxBranching + "," +
+                             averageBranching, basePath); 
     }
 
     public static void writeInstances(Set<HierarchyNode> nodes, String output) throws Exception {
@@ -110,6 +162,7 @@ public class GGstatistics {
         for(HierarchyNode n : nodes){
             HashMap<String,Integer> constructorUsage = getConstructorUsage(n); 
             IOHelper.writeAppend(constructorUsage.toString(), basePath + "/" + n.getID());
+            IOHelper.writeAppend(constructorUsage.size() + "", basePath + "/" + n.getID());
         } 
     }
 
