@@ -161,6 +161,7 @@ public class ClassFrameGroundGeneralisation {
         return this.chunks;
     }
 
+
     public boolean isIsomorphic(ClassFrameGroundGeneralisation f){
         if(f.size() != this.size)
             return false;
@@ -198,6 +199,70 @@ public class ClassFrameGroundGeneralisation {
         return true;
     }
 
+    public boolean coveredBy(ClassFrameGroundGeneralisation f){
+        if(!coveredBy(this.getSuperClasses(), f.getSuperClasses())){
+            return false;
+        }
+        if(!coveredBy(this.getEquivalences(), f.getEquivalences())){
+            return false;
+        }
+        if(!coveredBy(this.getDisjointUnions(), f.getDisjointUnions())){
+            return false;
+        }
+        if(!coveredBy(this.getDisjointClasses(), f.getDisjointClasses())){
+            return false;
+        }
+        return true; 
+    } 
+
+    private boolean coveredBy(Map<SyntaxTree,Integer> smaller, Map<SyntaxTree,Integer> bigger){
+        for(SyntaxTree t : smaller.keySet()){ 
+            boolean covered = false;
+            int tWeight = smaller.get(t);
+
+            for(SyntaxTree ct : bigger.keySet()){
+                int ctWeight = bigger.get(ct);
+
+                //weight needs to be covering
+                if(ctWeight >= tWeight){
+                    //expression tree needs to be equivalent
+                    if(GroundGeneralisation.exists(t,ct)){
+                        covered = true;
+                        break;
+                    } 
+                }
+            } 
+            if(!covered){
+                return false;//one tree is not covered
+            } 
+        }
+        return true; 
+    }
+
+    //private boolean coversSuperclasses(ClassFrameGroundGeneralisation f){
+    //    for(SyntaxTree t : this.superclasses.keySet()){ 
+    //        boolean covered = false;
+
+    //        int tWeight = this.superclasses.get(t);
+
+    //        for(SyntaxTree ct : f.getSuperClasses().keySet()){
+    //            int ctWeight = f.getSuperClasses().get(ct);
+
+    //            //weight needs to be covering
+    //            if(ctWeight >= tWeight){
+    //                //expression tree needs to be equivalent
+    //                if(GroundGeneralisation.exists(t,ct)){//ATTENTION
+    //                    covered = true;
+    //                    break;
+    //                } 
+    //            } 
+    //        } 
+    //        if(!covered){
+    //            return false;//one tree is not covered
+    //        }
+    //    } 
+    //    return true; 
+    //}
 
     private void initMap(Map<SyntaxTree,Integer> map, Set<OWLAxiom> set){
         for(OWLAxiom a : set){
