@@ -43,8 +43,9 @@ import java.nio.file.*;
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 
-//ATTENTION: this expects distinct (non-isomorpphic} regularities as input
-//NOte: this is easy to change
+//ATTENTION: this expects distinct (non-isomorpphic} trees under an abstraction as input 
+//(so not regularities)
+//Note: this is easy to change
 public class AxiomRegularityHierarchyImp {
 
 
@@ -61,11 +62,10 @@ public class AxiomRegularityHierarchyImp {
 
     private int nextID;
 
-    public AxiomRegularityHierarchyImp(Set<SyntaxTree> regularities){
-        this.initialise(regularities);
+    public AxiomRegularityHierarchyImp(Set<SyntaxTree> syntrees){
+        this.initialise(syntrees);
         this.buildHierarchy(); 
-        //System.out.println("Number of regularities " + regularities.size());
-        //System.out.println("Number of roots " + roots.size()); 
+        this.setDepths();
     }
 
     private void initialise(Set<SyntaxTree> trees){ 
@@ -84,6 +84,7 @@ public class AxiomRegularityHierarchyImp {
             specificity2tree.get(specificity).add(t);
         }
 
+        //we are looking for shared INTERNAL structures - not for strictly subgraphs
         ConstructorPreservanceBuilder builder = new ConstructorPreservanceBuilder(); 
         //identify equivalence classes in each stratum
         this.node2instances = new HashMap<>();
@@ -109,6 +110,7 @@ public class AxiomRegularityHierarchyImp {
                     SyntaxTree internal = builder.build(((AxiomNode) t.getRoot()).getAxiom()); 
                     HierarchyNode node = new HierarchyNode(t,internal,nextID); 
                     this.node2instances.put(node,new HashSet<>());
+                    this.node2instances.get(node).add(t);
 
                     reg.add(node);
                     this.nodes.add(node); 
@@ -134,7 +136,8 @@ public class AxiomRegularityHierarchyImp {
     }
 
     private void buildHierarchy(){
-        this.roots = new HashSet<>();
+        this.roots = new HashSet<>(); 
+        System.out.println("Levels to insert " + this.specificity2node.size());
         for(Map.Entry<Integer,Set<HierarchyNode>> entry : this.specificity2node.entrySet()){
             Integer specificity = entry.getKey();
             Set<HierarchyNode> nodes2insert = entry.getValue();
@@ -154,6 +157,23 @@ public class AxiomRegularityHierarchyImp {
             }
         } 
     } 
+
+    private void setDepths(){
+        Set<HierarchyNode> queue = new HashSet<>();
+        Set<HierarchyNode> nextLevel = new HashSet<>();
+        queue.addAll(this.roots);
+        int depth = 0;
+        while(!queue.isEmpty()){
+            for(HierarchyNode n : queue){
+                n.setDepth(depth);
+                nextLevel.addAll(n.getChildren());
+            } 
+            queue.clear();
+            queue.addAll(nextLevel);
+            nextLevel.clear();
+            depth+=1;
+        }
+    }
 
     public void writeGraphWithInstances(String output){
         IOHelper.writeAppend("digraph gname {", output + "/graph");
