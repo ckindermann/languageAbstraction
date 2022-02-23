@@ -85,8 +85,152 @@ public class GGstatistics {
         hierarchy.writeGraphWithInstances(outputPath + "/" + ontologyName);
 
         writeInstances(reg2inst, frameMiner, hierarchy,outputPath + "/" + ontologyName); 
-        writeStatistics(hierarchy, outputPath + "/" + ontologyName);
 
+        String statisticsPath = outputPath + "/" + ontologyName + "/statistics";
+        IOHelper.createFolder(statisticsPath);
+
+        writeRegularityStatistics(hierarchy, statisticsPath);
+        writeConstructorStatistics(hierarchy, statisticsPath); 
+        writeHierarchyStatistics(hierarchy.getRoots(), statisticsPath);
+
+    }
+
+    public static void writeHierarchyStatistics(Set<HierarchyNode> roots, String output) throws Exception {
+        String basePath = output + "/hierarchyStatistics";
+        //IOHelper.createFolder(basePath); 
+
+        int numberOfRoots = roots.size();
+        int numberOfNodes = 0;
+        int numberOfLeafs = 0;
+        int depth = 0; //depth of the hierarchy (is the number of levels)
+        int maxBranching = 0; //branching (max + average)
+        double averageBranching = 0.0; //number of nonroots / number of non-leafs
+        HashMap<Integer,Integer> level2nodes = new HashMap<>();
+        //number of nodes per level (number of axioms per level/% of ontology covered per level)
+
+        //2. breadth first search starting at root
+        Set<HierarchyNode> level = new HashSet<>(); 
+        level.addAll(roots);
+        Set<HierarchyNode> nextLevel = new HashSet<>();
+
+        while(!level.isEmpty()){
+            depth++;
+            level2nodes.put(depth, level.size());
+            for(HierarchyNode n : level){ 
+                numberOfNodes++; 
+                int numberOfChildren = n.getChildren().size();
+
+                if(numberOfChildren == 0){
+                    numberOfLeafs++;
+                }
+                if(numberOfChildren > maxBranching){
+                    maxBranching = numberOfChildren;
+                }
+
+                for(HierarchyNode c : n.getChildren()){
+                    nextLevel.add(c); 
+                }
+            }
+            level.clear();
+            level.addAll(nextLevel);
+            nextLevel.clear();
+        }
+
+        averageBranching = (double) (numberOfNodes - numberOfRoots) / (numberOfNodes - numberOfLeafs);
+
+        IOHelper.writeAppend("NumberOfRoots,NumberOfNodes,NumberOfLeafs,Depth,MaxBranching,AverageBranching",basePath);
+        IOHelper.writeAppend(numberOfRoots + "," +
+                             numberOfNodes + "," +
+                             numberOfLeafs + "," +
+                             depth + "," +
+                             maxBranching + "," +
+                             averageBranching, basePath); 
+    }
+
+    public static void writeConstructorStatistics(SetRegularityHierarchy hierarchy, 
+            String output) throws Exception {
+        String basePath = output + "/constructorStatistics";
+        IOHelper.createFolder(basePath); 
+
+        for(HierarchyNode node : hierarchy.getNodes()){ 
+            HashMap<String,Integer> cons = getConstructorUsage(node);
+
+            IOHelper.writeAppend(cons.toString(), basePath + "/" + node.getID()); 
+            IOHelper.writeAppend(cons.size() +"", basePath + "/" + node.getID()); 
+        } 
+    }
+
+    public static HashMap<String,Integer> getConstructorUsage(HierarchyNode n) throws Exception {
+
+        Map<SyntaxTree,Integer> trees = n.getFrame().getTrees();
+        HashMap<String, Integer> constructorStatistics = new HashMap<>();
+
+        for(Map.Entry<SyntaxTree, Integer> entry : trees.entrySet()){
+
+            SyntaxTree t = entry.getKey();
+            int weight = entry.getValue();
+
+            HashMap<String,Integer> constructorUsageTree = getConstructorUsage(t);
+
+            for(Map.Entry<String, Integer> entry2 : constructorUsageTree.entrySet()){
+
+                String type = entry2.getKey();
+                int occurrence = entry2.getValue() * weight;
+                constructorStatistics.put(type, constructorStatistics.getOrDefault(type, 0) + occurrence); 
+            }
+        }
+        return constructorStatistics; 
+
+    }
+
+    public static HashMap<String,Integer> getConstructorUsage(SyntaxTree t) throws Exception {
+        //Map from Constructor Type to int? 
+        HashMap<String, Integer> constructor2occurrence = new HashMap<String, Integer>();
+
+        SimpleDirectedGraph<SyntaxNode,DefaultEdge> tree = t.getTree();
+
+        //breadth first search 
+        SyntaxNode root = t.getRoot();
+        Set<SyntaxNode> level = new HashSet<>(); 
+        level.add(root);
+        Set<SyntaxNode> nextLevel = new HashSet<>();
+
+        while(!level.isEmpty()){
+            for(SyntaxNode n : level){ 
+                //if n is not a leaf node
+                if(tree.outgoingEdgesOf(n).size() > 0){
+                    if(n instanceof AxiomNode){
+                        OWLAxiom axiom = (OWLAxiom) n.getObject();
+                        String type = axiom.getAxiomType().getName();
+                        constructor2occurrence.put(type, constructor2occurrence.getOrDefault(type, 0) + 1); 
+                    }
+                    if(n instanceof ClassNode){
+                        OWLClassExpression expression = (OWLClassExpression) n.getObject();
+                        String type = expression.getClassExpressionType().getName();
+                        constructor2occurrence.put(type, constructor2occurrence.getOrDefault(type, 0) + 1);
+                    }
+                    if(n instanceof PropertyNode){
+                        //-necessarily inverse (because it's not a leaf)
+                        String type = "ObjectInverseOf";
+                        constructor2occurrence.put(type, constructor2occurrence.getOrDefault(type, 0) + 1);
+                    }
+                    if(n instanceof DataRangeNode){
+                        OWLDataRange range = (OWLDataRange) n.getObject();
+                        String type = range.getDataRangeType().getName();
+                        constructor2occurrence.put(type, constructor2occurrence.getOrDefault(type, 0) + 1);
+                    }
+                }
+                //construct next level
+                Set<DefaultEdge> edges = tree.outgoingEdgesOf(n); 
+                for(DefaultEdge e : edges){
+                    nextLevel.add(tree.getEdgeTarget(e)); 
+                }
+            }
+            level.clear();
+            level.addAll(nextLevel);
+            nextLevel.clear();
+        } 
+        return constructor2occurrence;
     }
 
     public static void writeInstances(
@@ -122,11 +266,11 @@ public class GGstatistics {
         }
     }
 
-    public static void writeStatistics(
+    public static void writeRegularityStatistics(
             SetRegularityHierarchy hierarchy, 
             String output) throws Exception {
 
-        String basePath = output + "/statistics";
+        String basePath = output + "/regularityStatistics";
 
         String header = "Regularity ID," +
                         "Number Of Instances," +
