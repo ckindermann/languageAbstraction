@@ -229,7 +229,7 @@ public class GGstatistics {
         String header = "Regularity ID," +
                         "Number Of Instances," +
                         "Size of Regularity Structure," +
-                        "Depth" +
+                        "Depth," +
                         "Number of Leafs," +
                         "Number of Non-Leafs," +
                         "Max Branching, "+ 
