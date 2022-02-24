@@ -136,7 +136,9 @@ public class GGstatistics {
             nextLevel.clear();
         }
 
-        averageBranching = (double) (numberOfNodes - numberOfRoots) / (numberOfNodes - numberOfLeafs);
+        if (numberOfNodes != numberOfLeafs) {
+            averageBranching = (double) (numberOfNodes - numberOfRoots) / (numberOfNodes - numberOfLeafs);
+        }
 
         IOHelper.writeAppend("NumberOfRoots,NumberOfNodes,NumberOfLeafs,Depth,MaxBranching,AverageBranching",basePath);
         IOHelper.writeAppend(numberOfRoots + "," +
@@ -294,7 +296,10 @@ public class GGstatistics {
             int nonLeafs = structureSize - leafs;
             int maxBranching = getMaxmialBranchingFactor(node);
             int roots = getRoots(node);
-            double averageBranching = ((double) structureSize  - roots) / nonLeafs;
+            double averageBranching = 0;
+            if(nonLeafs > 0){
+                averageBranching = ((double) structureSize  - roots) / nonLeafs;
+            }
             int numberOfAxioms = roots; //each axiom starts in a root node
             int maxAxiomRepetition = getMaxAxiomRepetition(node);
             int nonIsomorphicAxioms = getNonIsomorphicAxioms(node);

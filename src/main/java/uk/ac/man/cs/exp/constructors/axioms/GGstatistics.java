@@ -138,7 +138,9 @@ public class GGstatistics {
             nextLevel.clear();
         }
 
-        averageBranching = (numberOfNodes - numberOfRoots) / (numberOfNodes - numberOfLeafs);
+        if(numberOfNodes != numberOfLeafs){
+            averageBranching = ((double) (numberOfNodes - numberOfRoots)) / (numberOfNodes - numberOfLeafs);
+        }
 
         IOHelper.writeAppend("NumberOfRoots,NumberOfNodes,NumberOfLeafs,Depth,MaxBranching,AverageBranching",basePath);
         IOHelper.writeAppend(numberOfRoots + "," +
