@@ -84,17 +84,28 @@ public class GGstatistics {
         //ontology for all instances
         //file for example,depth,size,max branch,leafs,non-leafs,average branching 
 
+        //writes the (internal tree structure containment) graph 
         hImp.writeGraphWithInstances(outputPath + "/" + ontologyName);
 
         Set<HierarchyNode> nodes = hImp.getNodes();
+        Set<HierarchyNode> roots = hImp.getRoots();
+
+        //write regularity structures (example elements)
+        writeStructures(nodes, outputPath + "/" + ontologyName);
+
+        //write regularity instances
         writeInstances(nodes, outputPath + "/" + ontologyName);
 
+        //write roots
+        writeRoots(roots, outputPath + "/" + ontologyName);
+
+        //write statistics
         String statisticsPath = outputPath + "/" + ontologyName + "/statistics";
         IOHelper.createFolder(statisticsPath);
 
         writeRegularityStatistics(nodes, statisticsPath);
         writeConstructorUsage(nodes, statisticsPath);
-        writeHierarchyStatistics(hImp.getRoots(), statisticsPath);
+        writeHierarchyStatistics(roots, statisticsPath);
     }
 
     public static void writeHierarchyStatistics(Set<HierarchyNode> roots, String output) throws Exception {
@@ -149,6 +160,21 @@ public class GGstatistics {
                              depth + "," +
                              maxBranching + "," +
                              averageBranching, basePath); 
+    }
+
+    public static void writeStructures(Set<HierarchyNode> nodes, String output) throws Exception {
+        String basePath = output + "/structures";
+        IOHelper.createFolder(basePath);
+        for(HierarchyNode node : nodes){ 
+            IOHelper.writeAppend(node.getTree().getRoot().toString(),basePath + "/" + node.getID()); 
+        }
+    }
+
+    public static void writeRoots(Set<HierarchyNode> nodes, String output) throws Exception {
+        String basePath = output + "/roots";
+        for(HierarchyNode r : nodes){ 
+            IOHelper.writeAppend("" + r.getID(), basePath); 
+        }
     }
 
     public static void writeInstances(Set<HierarchyNode> nodes, String output) throws Exception {
