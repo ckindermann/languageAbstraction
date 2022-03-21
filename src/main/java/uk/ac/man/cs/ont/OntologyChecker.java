@@ -61,16 +61,16 @@ public class OntologyChecker {
     }
 
     public void check(){
-        this.loadable = isLoadable(this.ontologyFile);
+        this.loadable = isLoadable();
         if(this.loadable){
             this.classifiable = isClassifiable(this.ontology); 
             //this.convertible = isConvertible(this.ontology);
         }
     }
 
-    public boolean isLoadable(File ontologyFile){ 
+    public boolean isLoadable(){ 
         try {
-            this.ontology = this.manager.loadOntologyFromOntologyDocument(ontologyFile); 
+            this.ontology = this.manager.loadOntologyFromOntologyDocument(this.ontologyFile); 
         } catch (Exception e) {
             //e.printStackTrace();
             return false;
