@@ -175,6 +175,8 @@ public class AxiomRegularityHierarchyImp {
         }
     }
 
+    //TODO: with instances is the wrong name
+    //you are printing out an example element for a regularity  
     public void writeGraphWithInstances(String output){
         IOHelper.writeAppend("digraph gname {", output + "/graph");
 
@@ -195,10 +197,6 @@ public class AxiomRegularityHierarchyImp {
                 String edge = node.getID() + " -> " + c.getID();
                 IOHelper.writeAppend(edge, output + "/graph");
             }
-            IOHelper.writeAppend(node.getTree().getRoot().toString(),output + "/" + node.getID());
-        }
-        for(HierarchyNode r : this.roots){
-            IOHelper.writeAppend("Root " + r.getID(), output + "/roots"); 
         }
     }
 
