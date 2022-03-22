@@ -170,17 +170,33 @@ public class HierarchyNode {
         return false; 
     }
 
-    //if this tree is a 'subgraph' in the other tree
     public boolean coveredBy(HierarchyNode n){
+
+        //check whether two internal Tree structures are isomorphic
+        if(GroundGeneralisation.exists(n.getInternalTree(), this.internalTree)){
+            //if so, then check whether the whole tree is a subgraph of the other 
+            if(Subisomorphism.exists(n.getTree(), this.tree)){
+                return true;
+            } else {
+                return false; 
+            } 
+        //otherwise, check whether the internal tree structure are in a subgraph relation
+        } else {
+            return Subisomorphism.exists(n.getInternalTree(), this.internalTree); 
+        }
+
+        //boolean res = Subisomorphism.exists(n.getInternalTree(), this.internalTree);//check whether this is correct - should be though
+        //return res;
+
         //check whether internal tree of n is subtree of 'this'
         //System.out.println("Start");
         //return Subisomorphism.exists(this.tree, n.getInternalTree());
         //boolean res = Subisomorphism.exists(this.tree, n.getInternalTree());
         //boolean res = Subisomorphism.exists(this.internalTree, n.getInternalTree());//check whether this is correct - should be though
-        boolean res = Subisomorphism.exists(n.getInternalTree(), this.internalTree);//check whether this is correct - should be though
+        //boolean res = Subisomorphism.exists(n.getInternalTree(), this.internalTree);//check whether this is correct - should be though
         //boolean res = Subisomorphism.exists(n.getTree(), this.tree); //(checks whether second argument is an induced subgraph of the first argument)
         //System.out.println("Stop");
-        return res;
+        //return res;
         //return Subisomorphism.exists(this.internalTree, n.getInternalTree());
     } 
 
