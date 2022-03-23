@@ -176,12 +176,11 @@ public class SetRegularityHierarchy {
                 String edge = node.getID() + " -> " + c.getID();
                 IOHelper.writeAppend(edge, output + "/graph");
             }
-            //TODO:
-            IOHelper.writeAppend(node.getFrame().toString(),output + "/" + node.getID());
+            //IOHelper.writeAppend(node.getFrame().toString(),output + "/" + node.getID());
         }
-        for(HierarchyNode r : this.roots){
-            IOHelper.writeAppend("Root " + r.getID(), output + "/roots"); 
-        }
+        //for(HierarchyNode r : this.roots){
+        //    IOHelper.writeAppend("Root " + r.getID(), output + "/roots"); 
+        //}
     }
 
     public int getClassFrameID(ClassFrameGroundGeneralisation f){
