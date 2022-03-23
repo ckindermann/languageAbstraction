@@ -92,7 +92,24 @@ public class GGstatistics {
         writeRegularityStatistics(hierarchy, statisticsPath);
         writeConstructorStatistics(hierarchy, statisticsPath); 
         writeHierarchyStatistics(hierarchy.getRoots(), statisticsPath);
+        writeStructures(hierarchy.getNodes(), outputPath + "/" + ontologyName);
+        writeRoots(hierarchy.getRoots(), outputPath + "/" + ontologyName);
 
+    }
+
+    public static void writeStructures(Set<HierarchyNode> nodes, String output) throws Exception {
+        String basePath = output + "/structures";
+        IOHelper.createFolder(basePath);
+        for(HierarchyNode node : nodes){ 
+            IOHelper.writeAppend(node.getFrame().toString(),basePath + "/" + node.getID()); 
+        }
+    }
+
+    public static void writeRoots(Set<HierarchyNode> nodes, String output) throws Exception {
+        String basePath = output + "/roots";
+        for(HierarchyNode r : nodes){ 
+            IOHelper.writeAppend("" + r.getID(), basePath); 
+        }
     }
 
     public static void writeHierarchyStatistics(Set<HierarchyNode> roots, String output) throws Exception {
