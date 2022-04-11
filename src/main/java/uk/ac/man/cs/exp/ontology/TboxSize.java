@@ -1,4 +1,4 @@
-package uk.ac.man.cs.exp;
+package uk.ac.man.cs.exp.ontology;
 
 
 import uk.ac.man.cs.ont.*;
