@@ -2,6 +2,7 @@ package uk.ac.man.cs.exp.ontology;
 
 import uk.ac.man.cs.ont.*;
 import uk.ac.man.cs.util.*;
+
 import java.util.logging.Logger;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -20,9 +21,32 @@ public class Profiling {
         String outputPath = args[1];
 
         OntologyProfiler profiler = new OntologyProfiler(ontFilePath, false);
-        System.out.println("NoLogicalAxioms " + profiler.isLogicallyEmpty());
-        System.out.println("Hierarchy " + profiler.isHierarchy());
-        System.out.println("EL " + profiler.isEL());
-        System.out.println("Not EL " + profiler.isNotEL());
+        String ontologyName = Paths.get(ontFilePath).getFileName().toString();
+
+        boolean categorised = false;
+
+        if(profiler.isLogicallyEmpty()){
+            IOHelper.writeAppend(ontologyName, outputPath + "/empty");
+            categorised = true;
+        }
+
+        if(profiler.isHierarchy() && !categorised){
+            IOHelper.writeAppend(ontologyName, outputPath + "/hierarchy");
+            categorised = true;
+        }
+
+        if(profiler.isEL() && !categorised){
+            IOHelper.writeAppend(ontologyName, outputPath + "/EL");
+            categorised = true;
+        }
+
+        if(profiler.isNotEL() && !categorised){
+            IOHelper.writeAppend(ontologyName, outputPath + "/rich"); 
+            categorised = true;
+        }
+
+        if(!categorised){
+            IOHelper.writeAppend(ontologyName, outputPath + "/error"); 
+        } 
     }
 }
