@@ -56,7 +56,7 @@ public class GGstatistics {
 
         File ontFile = new File(ontFilePath);
         //log.info("\tLoading Ontology : " + ontFile.getName()); 
-        OntologyLoader ontLoader = new OntologyLoader(ontFile, true);
+        OntologyLoader ontLoader = new OntologyLoader(ontFile, false);
         OWLOntology ont = ontLoader.getOntology(); 
 
         String ontologyName = Paths.get(ontFilePath).getFileName().toString();
@@ -67,10 +67,10 @@ public class GGstatistics {
 
         //Get Class Axioms
         Set<OWLAxiom> toTest = new HashSet<>();
-        toTest.addAll(ont.getAxioms(AxiomType.SUBCLASS_OF, Imports.INCLUDED));
-        toTest.addAll(ont.getAxioms(AxiomType.EQUIVALENT_CLASSES, Imports.INCLUDED));
-        toTest.addAll(ont.getAxioms(AxiomType.DISJOINT_UNION, Imports.INCLUDED));
-        toTest.addAll(ont.getAxioms(AxiomType.DISJOINT_CLASSES, Imports.INCLUDED));
+        toTest.addAll(ont.getAxioms(AxiomType.SUBCLASS_OF, Imports.EXCLUDED));
+        toTest.addAll(ont.getAxioms(AxiomType.EQUIVALENT_CLASSES, Imports.EXCLUDED));
+        toTest.addAll(ont.getAxioms(AxiomType.DISJOINT_UNION, Imports.EXCLUDED));
+        toTest.addAll(ont.getAxioms(AxiomType.DISJOINT_CLASSES, Imports.EXCLUDED));
 
         //Build syntax trees
         Set<SyntaxTree> syntrees = new HashSet<>();
@@ -120,6 +120,8 @@ public class GGstatistics {
         double averageBranching = 0.0; //number of nonroots / number of non-leafs
         HashMap<Integer,Integer> level2nodes = new HashMap<>();
         //number of nodes per level (number of axioms per level/% of ontology covered per level)
+        int numberOfEdges = 0;
+        double graphDensity = 0.0;
 
         //2. breadth first search starting at root
         Set<HierarchyNode> level = new HashSet<>(); 
@@ -132,6 +134,7 @@ public class GGstatistics {
             for(HierarchyNode n : level){ 
                 numberOfNodes++; 
                 int numberOfChildren = n.getChildren().size();
+                numberOfEdges += numberOfChildren;
 
                 if(numberOfChildren == 0){
                     numberOfLeafs++;
@@ -153,13 +156,18 @@ public class GGstatistics {
             averageBranching = ((double) (numberOfNodes - numberOfRoots)) / (numberOfNodes - numberOfLeafs);
         }
 
-        IOHelper.writeAppend("NumberOfRoots,NumberOfNodes,NumberOfLeafs,Depth,MaxBranching,AverageBranching",basePath);
+        if(numberOfNodes != 0) {
+            graphDensity = (double) (2* numberOfEdges) / (numberOfNodes * (numberOfNodes -1));
+        }
+
+        IOHelper.writeAppend("NumberOfRoots,NumberOfNodes,NumberOfLeafs,Depth,MaxBranching,AverageBranching,GraphDensity",basePath);
         IOHelper.writeAppend(numberOfRoots + "," +
                              numberOfNodes + "," +
                              numberOfLeafs + "," +
                              depth + "," +
                              maxBranching + "," +
-                             averageBranching, basePath); 
+                             averageBranching + "," +
+                             graphDensity, basePath); 
     }
 
     public static void writeStructures(Set<HierarchyNode> nodes, String output) throws Exception {

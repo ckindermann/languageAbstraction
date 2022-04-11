@@ -123,6 +123,8 @@ public class GGstatistics {
         int maxBranching = 0; //branching (max + average)
         double averageBranching = 0.0; //number of nonroots / number of non-leafs
         HashMap<Integer,Integer> level2nodes = new HashMap<>();
+        int numberOfEdges = 0 ;
+        double graphDensity = 0.0;
         //number of nodes per level (number of axioms per level/% of ontology covered per level)
 
         //2. breadth first search starting at root
@@ -136,6 +138,7 @@ public class GGstatistics {
             for(HierarchyNode n : level){ 
                 numberOfNodes++; 
                 int numberOfChildren = n.getChildren().size();
+                numberOfEdges += numberOfChildren;
 
                 if(numberOfChildren == 0){
                     numberOfLeafs++;
@@ -157,13 +160,18 @@ public class GGstatistics {
             averageBranching = (double) (numberOfNodes - numberOfRoots) / (numberOfNodes - numberOfLeafs);
         }
 
-        IOHelper.writeAppend("NumberOfRoots,NumberOfNodes,NumberOfLeafs,Depth,MaxBranching,AverageBranching",basePath);
+        if (numberOfNodes != 0){
+            graphDensity = (double) (2* numberOfEdges) / (numberOfNodes * (numberOfNodes -1));
+        }
+
+        IOHelper.writeAppend("NumberOfRoots,NumberOfNodes,NumberOfLeafs,Depth,MaxBranching,AverageBranching,GraphDensity",basePath);
         IOHelper.writeAppend(numberOfRoots + "," +
                              numberOfNodes + "," +
                              numberOfLeafs + "," +
                              depth + "," +
                              maxBranching + "," +
-                             averageBranching, basePath); 
+                             averageBranching + "," +
+                             graphDensity, basePath); 
     }
 
     public static void writeConstructorStatistics(SetRegularityHierarchy hierarchy, 
@@ -314,6 +322,7 @@ public class GGstatistics {
             int maxBranching = getMaxmialBranchingFactor(node);
             int roots = getRoots(node);
             double averageBranching = 0;
+
             if(nonLeafs > 0){
                 averageBranching = ((double) structureSize  - roots) / nonLeafs;
             }
@@ -336,6 +345,7 @@ public class GGstatistics {
             IOHelper.writeAppend(sum, basePath); 
         }
     }
+
 
     public static int getNonIsomorphicAxioms(HierarchyNode n) {
         Map<SyntaxTree,Integer> trees = n.getFrame().getTrees(); 
