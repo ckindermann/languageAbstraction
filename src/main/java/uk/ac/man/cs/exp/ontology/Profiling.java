@@ -25,8 +25,8 @@ public class Profiling {
 
         boolean categorised = false;
 
-        if(profiler.isLogicallyEmpty()){
-            IOHelper.writeAppend(ontologyName, outputPath + "/empty");
+        if(profiler.hasNoClassExpressionAxioms()){
+            IOHelper.writeAppend(ontologyName, outputPath + "/noClassExpressionAxioms");
             categorised = true;
         }
 

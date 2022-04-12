@@ -60,7 +60,7 @@ public class ExplicitClassHierarchy {
     }
 
     private boolean compile() throws Exception {
-        Set<OWLAxiom> axioms = this.ontology.getAxioms(Imports.INCLUDED); 
+        Set<OWLAxiom> axioms = this.ontology.getAxioms(Imports.EXCLUDED); 
 
         for(OWLAxiom a : axioms){
             if(isAtomicSubsumption(a)){
