@@ -57,7 +57,7 @@ public class SetRegularityHierarchy {
 
         File ontFile = new File(ontFilePath);
         //log.info("\tLoading Ontology : " + ontFile.getName()); 
-        OntologyLoader ontLoader = new OntologyLoader(ontFile, true);
+        OntologyLoader ontLoader = new OntologyLoader(ontFile, false);
         OWLOntology ont = ontLoader.getOntology(); 
 
         String ontologyName = Paths.get(ontFilePath).getFileName().toString();
