@@ -57,7 +57,7 @@ public class TboxSize {
 
         File ontFile = new File(ontFilePath);
         log.info("\tLoading Ontology : " + ontFile.getName()); 
-        OntologyLoader ontLoader = new OntologyLoader(ontFile, true);
+        OntologyLoader ontLoader = new OntologyLoader(ontFile, false);
         OWLOntology ont = ontLoader.getOntology(); 
 
         String ontologyName = Paths.get(ontFilePath).getFileName().toString();
@@ -72,16 +72,16 @@ public class TboxSize {
     private int getClassAxiomNumber(OWLOntology ont){
 
         int classAxioms = 0;
-        classAxioms += ont.getAxioms(AxiomType.SUBCLASS_OF, Imports.INCLUDED).size();
-        classAxioms += ont.getAxioms(AxiomType.EQUIVALENT_CLASSES, Imports.INCLUDED).size();
-        classAxioms += ont.getAxioms(AxiomType.DISJOINT_UNION, Imports.INCLUDED).size();
-        classAxioms += ont.getAxioms(AxiomType.DISJOINT_CLASSES, Imports.INCLUDED).size();
+        classAxioms += ont.getAxioms(AxiomType.SUBCLASS_OF, Imports.EXCLUDED).size();
+        classAxioms += ont.getAxioms(AxiomType.EQUIVALENT_CLASSES, Imports.EXCLUDED).size();
+        classAxioms += ont.getAxioms(AxiomType.DISJOINT_UNION, Imports.EXCLUDED).size();
+        classAxioms += ont.getAxioms(AxiomType.DISJOINT_CLASSES, Imports.EXCLUDED).size();
         return classAxioms;
     }
 
     private int getTboxSize(OWLOntology ont){ 
-        Set<OWLAxiom> tBox = ont.getTBoxAxioms(Imports.INCLUDED); 
-        Set<OWLAxiom> rBox = ont.getRBoxAxioms(Imports.INCLUDED);
+        Set<OWLAxiom> tBox = ont.getTBoxAxioms(Imports.EXCLUDED); 
+        Set<OWLAxiom> rBox = ont.getRBoxAxioms(Imports.EXCLUDED);
         return tBox.size() + rBox.size();
     }
 }
