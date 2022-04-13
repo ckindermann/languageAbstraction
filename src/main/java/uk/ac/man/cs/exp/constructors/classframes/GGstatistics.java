@@ -59,7 +59,7 @@ public class GGstatistics {
 
         File ontFile = new File(ontFilePath);
         //log.info("\tLoading Ontology : " + ontFile.getName()); 
-        OntologyLoader ontLoader = new OntologyLoader(ontFile, true);
+        OntologyLoader ontLoader = new OntologyLoader(ontFile, false);
         OWLOntology ont = ontLoader.getOntology(); 
 
         String ontologyName = Paths.get(ontFilePath).getFileName().toString();
@@ -91,7 +91,7 @@ public class GGstatistics {
 
         writeRegularityStatistics(hierarchy, statisticsPath);
         writeConstructorStatistics(hierarchy, statisticsPath); 
-        writeHierarchyStatistics(hierarchy.getRoots(), statisticsPath);
+        writeHierarchyStatistics(hierarchy.getRoots(), hierarchy.getNodes(), statisticsPath);
         writeStructures(hierarchy.getNodes(), outputPath + "/" + ontologyName);
         writeRoots(hierarchy.getRoots(), outputPath + "/" + ontologyName);
 
@@ -112,12 +112,12 @@ public class GGstatistics {
         }
     }
 
-    public static void writeHierarchyStatistics(Set<HierarchyNode> roots, String output) throws Exception {
+    public static void writeHierarchyStatistics(Set<HierarchyNode> roots, Set<HierarchyNode> nodes, String output) throws Exception {
         String basePath = output + "/hierarchyStatistics";
         //IOHelper.createFolder(basePath); 
 
         int numberOfRoots = roots.size();
-        int numberOfNodes = 0;
+        int numberOfNodes = nodes.size();
         int numberOfLeafs = 0;
         int depth = 0; //depth of the hierarchy (is the number of levels)
         int maxBranching = 0; //branching (max + average)
@@ -125,6 +125,7 @@ public class GGstatistics {
         HashMap<Integer,Integer> level2nodes = new HashMap<>();
         int numberOfEdges = 0 ;
         double graphDensity = 0.0;
+        double dagDensity = 0.0;
         //number of nodes per level (number of axioms per level/% of ontology covered per level)
 
         //2. breadth first search starting at root
@@ -136,17 +137,6 @@ public class GGstatistics {
             depth++;
             level2nodes.put(depth, level.size());
             for(HierarchyNode n : level){ 
-                numberOfNodes++; 
-                int numberOfChildren = n.getChildren().size();
-                numberOfEdges += numberOfChildren;
-
-                if(numberOfChildren == 0){
-                    numberOfLeafs++;
-                }
-                if(numberOfChildren > maxBranching){
-                    maxBranching = numberOfChildren;
-                }
-
                 for(HierarchyNode c : n.getChildren()){
                     nextLevel.add(c); 
                 }
@@ -156,6 +146,18 @@ public class GGstatistics {
             nextLevel.clear();
         }
 
+        for(HierarchyNode n : nodes){
+                int numberOfChildren = n.getChildren().size();
+                numberOfEdges += numberOfChildren;
+
+                if(numberOfChildren == 0){
+                    numberOfLeafs++;
+                }
+                if(numberOfChildren > maxBranching){
+                    maxBranching = numberOfChildren;
+                }
+        }
+
         if (numberOfNodes != numberOfLeafs) {
             averageBranching = (double) (numberOfNodes - numberOfRoots) / (numberOfNodes - numberOfLeafs);
         }
@@ -163,15 +165,21 @@ public class GGstatistics {
         if (numberOfNodes != 0){
             graphDensity = (double) (2* numberOfEdges) / (numberOfNodes * (numberOfNodes -1));
         }
+        if(numberOfNodes !=0) {
+            int internal = numberOfNodes - (numberOfRoots + numberOfLeafs);
 
-        IOHelper.writeAppend("NumberOfRoots,NumberOfNodes,NumberOfLeafs,Depth,MaxBranching,AverageBranching,GraphDensity",basePath);
+            dagDensity = (double) (2* numberOfEdges) /(numberOfRoots*internal + numberOfRoots*numberOfLeafs + (internal * (internal -1)) + internal*numberOfLeafs); 
+        }
+
+        IOHelper.writeAppend("NumberOfRoots,NumberOfNodes,NumberOfLeafs,Depth,MaxBranching,AverageBranching,GraphDensity,DagDensity",basePath);
         IOHelper.writeAppend(numberOfRoots + "," +
                              numberOfNodes + "," +
                              numberOfLeafs + "," +
                              depth + "," +
                              maxBranching + "," +
                              averageBranching + "," +
-                             graphDensity, basePath); 
+                             graphDensity + "," +
+                             dagDensity, basePath); 
     }
 
     public static void writeConstructorStatistics(SetRegularityHierarchy hierarchy, 
