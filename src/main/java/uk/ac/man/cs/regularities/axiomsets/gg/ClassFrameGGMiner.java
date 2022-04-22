@@ -56,6 +56,11 @@ public class ClassFrameGGMiner {
         this.mine(); 
     }
 
+    public ClassFrameGGMiner(Set<ClassFrame> frames){
+        this.stratifyBySize(frames);
+        this.mine(); 
+    }
+
     public Map<ClassFrameGroundGeneralisation,Set<ClassFrameGroundGeneralisation>> getRegularity2instance(){
         return this.regularity2instances;
     }
