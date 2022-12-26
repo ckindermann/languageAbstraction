@@ -34,7 +34,6 @@ import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.change.AxiomChangeData;
 import org.semanticweb.owlapi.search.EntitySearcher; 
 
-
 import java.nio.file.*;
 
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
@@ -163,6 +162,8 @@ public class TestHierarchy {
 
 
         hImp.writeGraphWithInstances(outputPath);
+        hImp.writeExampleInstances(outputPath);
+        hImp.writeRoots(outputPath);
 
         //print stuff
         //for(HierarchyNode n : hImp.getNodes()){
@@ -180,7 +181,7 @@ public class TestHierarchy {
             int ID = n.getID();
             Set<OWLAxiom> instances = n.getInstances();
 
-            OntologySaver.saveAxioms(instances, outputPath + "/ontologies/" + ID);
+            OntologySaver.saveAxioms(instances, outputPath + "/ontologies/" + ID + ".owl");
         }
     }
 }

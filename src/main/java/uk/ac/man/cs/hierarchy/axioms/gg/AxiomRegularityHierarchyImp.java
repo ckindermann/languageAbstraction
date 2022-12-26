@@ -200,4 +200,17 @@ public class AxiomRegularityHierarchyImp {
         }
     }
 
+    public void writeExampleInstances(String output) {
+        for(HierarchyNode node : this.nodes){
+            IOHelper.writeAppend(node.getTree().getRoot().toString(),output + "/" + node.getID());
+        }
+
+    }
+
+    public void writeRoots(String output){ 
+        for(HierarchyNode r : this.roots){
+            IOHelper.writeAppend("Root " + r.getID(), output + "/roots");
+        }
+    }
+
 }
