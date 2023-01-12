@@ -55,4 +55,8 @@ public class SyntaxTree {
     public SyntaxNode getRoot(){
         return this.root;
     }
+
+    public String toString(){
+        return this.root.toString();
+    }
 }

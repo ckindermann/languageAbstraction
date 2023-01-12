@@ -69,6 +69,10 @@ public class SyntaxNode {
 
     public String toString(){
         if(object == null){
+            if(this instanceof CardinalityNode) {
+                CardinalityNode c = (CardinalityNode) this;
+                return c.toString();
+            }
             return "null";
         } else {
             return this.object.toString();
