@@ -152,15 +152,11 @@ public class HierarchyNode {
         if(this.coveredBy(n)){
             boolean insertionPointFound = false;
             for(HierarchyNode c : this.children){
-                if(!n.visitedDuringInsertion.contains(c)){
-                    if(c.insertFromAbove(n)){
+
+                if(!n.visitedDuringInsertion.contains(c) &&
+                    c.insertFromAbove(n) ){
                         insertionPointFound = true;
-                    } 
-                } else {
-                    if(c.coveredBy(n)){//the node to be inserted can be reached from somewhere else 
-                        insertionPointFound = true;
-                    } 
-                } 
+                }
             }
             if(!insertionPointFound){
                 this.children.add(n);
